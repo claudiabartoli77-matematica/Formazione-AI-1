@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missione AI – Comprendere il presente per progettare il futuro</title>
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1c2842;
+      --primary-blue: #0066ff;
+      --cyan-electric: #00f0ff;
+      --gold-accent: #ffd700;
+      --text-light: #f0f4f8;
+      --text-muted: #a0aec0;
+      --border-color: #2a3b5c;
+      --success-green: #00e676;
+      --error-red: #ff5252;
+      --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-bottom: 2px solid var(--cyan-electric);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .avatar-header {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-accent);
+      object-fit: cover;
+      background-color: #1e293b;
+    }
+
+    .header-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cyan-electric);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-nav {
+      background: transparent;
+      border: 1px solid var(--cyan-electric);
+      color: var(--cyan-electric);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .btn-nav:hover, .btn-nav:focus {
+      background: var(--cyan-electric);
+      color: var(--bg-dark);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+      outline: none;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1000px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    h1, h2, h3 {
+      color: var(--cyan-electric);
+      margin-bottom: 1rem;
+    }
+
+    h1 { font-size: 2rem; text-align: center; color: var(--gold-accent); }
+    h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary-blue), var(--cyan-electric));
+      color: #000;
+      font-weight: 700;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover:not(:disabled), .btn-primary:focus:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+      outline: none;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      padding: 0.8rem 1.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover, .btn-secondary:focus {
+      background: var(--border-color);
+      color: #fff;
+      outline: none;
+    }
+
+    /* Map / Dashboard layout */
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .map-node {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .map-node.unlocked {
+      border-color: var(--cyan-electric);
+      cursor: pointer;
+    }
+
+    .map-node.unlocked:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .map-node.completed {
+      border-color: var(--gold-accent);
+    }
+
+    .map-node.completed::after {
+      content: '✓ Completato';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--gold-accent);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .map-node.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+      border-color: #334155;
+    }
+
+    .map-node .lock-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .map-node h3 {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .map-node.unlocked h3 {
+      color: var(--cyan-electric);
+    }
+
+    /* Quiz Styling */
+    .question-container {
+      margin-bottom: 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--cyan-electric);
+    }
+
+    .question-text {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .option-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .option-btn:hover, .option-btn:focus {
+      background: var(--bg-card-hover);
+      border-color: var(--cyan-electric);
+      outline: none;
+    }
+
+    .option-btn.selected {
+      border-color: var(--gold-accent);
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    .option-btn.correct {
+      background: rgba(0, 230, 118, 0.2) !important;
+      border-color: var(--success-green) !important;
+      color: #fff;
+    }
+
+    .option-btn.incorrect {
+      background: rgba(255, 82, 82, 0.2) !important;
+      border-color: var(--error-red) !important;
+      color: #fff;
+    }
+
+    /* Video Consent Wrapper */
+    .video-container {
+      margin: 1.5rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      position: relative;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .video-cover-wrapper {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.5rem;
+    }
+
+    .video-overlay {
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(5px);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      max-width: 500px;
+      text-align: center;
+      margin: auto;
+    }
+
+    .video-overlay h4 {
+      color: var(--gold-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .video-overlay p {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Avatar Intro Header */
+    .avatar-intro {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: rgba(0, 240, 255, 0.05);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .avatar-intro img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-accent);
+      object-fit: cover;
+      background-color: #1e293b;
+    }
+
+    .feedback-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    .feedback-hint { background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold-accent); color: var(--gold-accent); }
+    .feedback-explain { background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan-electric); color: #fff; }
+
+    /* Concept Card Banner */
+    .concept-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #311b92 100%);
+      border: 2px solid var(--gold-accent);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+    }
+
+    .concept-card h4 {
+      color: var(--gold-accent);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .concept-card h3 {
+      color: #fff;
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .concept-card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    /* Matching Activity */
+    .matching-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .matching-item {
+      background: var(--bg-card-hover);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+    }
+
+    select.matching-select {
+      width: 100%;
+      background: var(--bg-dark);
+      color: var(--cyan-electric);
+      border: 1px solid var(--cyan-electric);
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Escape Room Styling */
+    .escape-full {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .room-card {
+      background: #0f172a;
+      border: 2px solid var(--cyan-electric);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Modal / Privacy */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--cyan-electric);
+      border-radius: 12px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header { flex-direction: column; gap: 1rem; text-align: center; }
+      .avatar-intro { flex-direction: column; text-align: center; }
+      .matching-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <img src="avatar.png" alt="Avatar Formatrice" class="avatar-header" id="headerAvatar" onerror="this.style.display='none'">
+      <span class="header-title">Missione AI</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-nav" onclick="app.showPrivacyModal()" aria-label="Apri Privacy Policy">Privacy</button>
+      <button class="btn-nav" onclick="app.resetProgress()" aria-label="Cancella progressi e ricomincia">Reset Progressi</button>
+    </div>
+  </header>
+
+  <main id="appContainer">
+    <!-- Dynamic View Content will be rendered here -->
+  </main>
+
+  <!-- Privacy Modal -->
+  <div id="privacyModal" class="modal" role="dialog" aria-labelledby="privacyTitle" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-modal" onclick="app.closePrivacyModal()" aria-label="Chiudi finestra privacy">&times;</button>
+      <h2 id="privacyTitle">Informativa sulla Privacy e Trattamento Dati</h2>
+      <div style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-light);">
+        <p>In conformità con le normative sulla protezione dei dati, questa applicazione didattica è progettata secondo i principi di minimizzazione e protezione della privacy fin dalla progettazione (Privacy by Design):</p>
+        <ul style="margin: 1rem 0 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <li><strong>Nessuna registrazione:</strong> L'accesso è libero e non richiede la creazione di un account.</li>
+          <li><strong>Nessun dato personale richiesto:</strong> L'applicazione non raccoglie né richiede il nome, l'email o altri dati identificativi dell'utente.</li>
+          <li><strong>Memorizzazione locale:</strong> Le risposte ai test e i progressi di completamento dei moduli sono salvati <em>esclusivamente</em> nel tuo browser tramite <code>localStorage</code>. Non vengono trasmessi a nessun server esterno.</li>
+          <li><strong>Cancellazione dati:</strong> Puoi cancellare in qualsiasi momento tutti i tuoi dati locali utilizzando il pulsante "Reset Progressi" presente nella barra in alto.</li>
+          <li><strong>GitHub Pages:</strong> L'applicazione è ospitata su GitHub Pages, che potrebbe trattare dati tecnici di navigazione (come l'indirizzo IP) esclusivamente per motivi di sicurezza e corretto funzionamento del servizio di hosting.</li>
+          <li><strong>Integrazione YouTube:</strong> I video incorporati non vengono caricati automaticamente. YouTube (tramite il dominio a tutela della privacy <code>youtube-nocookie.com</code>) viene contattato <em>solo ed esclusivamente</em> dopo il tuo consenso esplicito per ciascun singolo video.</li>
+          <li><strong>Nessun invio a servizi IA:</strong> Nessun testo o dato inserito nell'app viene trasmesso a servizi esterni di intelligenza artificiale.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CONFIGURAZIONE ID VIDEO YOUTUBE (MODIFICALI QUI)
+       ========================================================================== */
+    const VIDEO_1_ID = "e83UFMOXuD4";
+    const VIDEO_2_ID = "lBJkhhB3DpE";
+    const VIDEO_3_ID = ""; // Inserire l'ID del Video 3 quando disponibile
+    const VIDEO_4_ID = ""; // Inserire l'ID del Video 4 quando disponibile
+
+    /* ==========================================================================
+       DATA STRUCTURES & CONTENT
+       ========================================================================== */
+
+    const INITIAL_QUESTIONS = [
+      {
+        id: 1,
+        question: "Quale caratteristica descrive meglio un algoritmo tradizionale deterministico?",
+        options: [
+          "Genera ogni volta un risultato differente.",
+          "Seguiva una sequenza definita di istruzioni e, a parità di input e condizioni, produce lo stesso risultato.",
+          "Impara autonomamente senza ricevere dati.",
+          "Comprende le intenzioni di chi lo utilizza."
+        ],
+        correctIndex: 1,
+        knowledge: "distingue un algoritmo deterministico da un sistema che apprende dai dati."
+      },
+      {
+        id: 2,
+        question: "Che cosa caratterizza principalmente il machine learning?",
+        options: [
+          "Tutte le regole necessarie vengono scritte anticipatamente una per una.",
+          "Il sistema individua regolarità nei dati per effettuare classificazioni o previsioni.",
+          "Il sistema possiede una coscienza simile a quella umana.",
+          "Il sistema può lavorare soltanto con testi."
+        ],
+        correctIndex: 1,
+        knowledge: "riconosce che il machine learning apprende regolarità dai dati."
+      },
+      {
+        id: 3,
+        question: "Quale attività è tipica di un sistema di IA tradizionale?",
+        options: [
+          "Classificare un messaggio come spam o non spam.",
+          "Desiderare di aiutare l’utente.",
+          "Comprendere emotivamente la persona che scrive.",
+          "Generare sempre contenuti creativi e originali."
+        ],
+        correctIndex: 0,
+        knowledge: "riconosce le funzioni di classificazione e previsione dell’IA tradizionale."
+      },
+      {
+        id: 4,
+        question: "Qual è la funzione caratteristica dell’IA generativa?",
+        options: [
+          "Conservare esclusivamente documenti già esistenti.",
+          "Produrre nuovi contenuti sulla base delle regolarità apprese dai dati.",
+          "Verificare automaticamente la verità di ogni risposta.",
+          "Eseguire soltanto calcoli numerici."
+        ],
+        correctIndex: 1,
+        knowledge: "distingue l’IA generativa dall’IA orientata principalmente alla classificazione."
+      },
+      {
+        id: 5,
+        question: "Che cos’è un LLM?",
+        options: [
+          "Un archivio contenente risposte già pronte.",
+          "Un grande modello linguistico addestrato a elaborare e generare linguaggio.",
+          "Un motore di ricerca che mostra sempre le fonti.",
+          "Un sistema utilizzato esclusivamente per creare immagini."
+        ],
+        correctIndex: 1,
+        knowledge: "comprende la funzione essenziale di un grande modello linguistico."
+      },
+      {
+        id: 6,
+        question: "Quando un sistema di IA può essere definito multimodale?",
+        options: [
+          "Quando produce risposte molto lunghe.",
+          "Quando può trattare e mettere in relazione modalità differenti, come testo, immagini e audio.",
+          "Quando utilizza contemporaneamente più siti Internet.",
+          "Quando fornisce più risposte alla stessa domanda."
+        ],
+        correctIndex: 1,
+        knowledge: "riconosce la capacità di collegare modalità differenti."
+      },
+      {
+        id: 7,
+        question: "Che cosa distingue principalmente un sistema agentico da un semplice chatbot?",
+        options: [
+          "Utilizza sempre un avatar.",
+          "Risponde soltanto con messaggi più brevi.",
+          "Può perseguire un obiettivo attraverso una sequenza di azioni e l’uso di strumenti.",
+          "Non può commettere errori."
+        ],
+        correctIndex: 2,
+        knowledge: "riconosce la maggiore autonomia operativa dei sistemi agentici."
+      },
+      {
+        id: 8,
+        question: "Che cosa si intende con “allucinazione” di un sistema generativo?",
+        options: [
+          "Il rifiuto di rispondere a una domanda.",
+          "La produzione di informazioni false o non fondate presentate in forma plausibile.",
+          "La capacità di generare un’immagine.",
+          "Un rallentamento temporaneo della connessione."
+        ],
+        correctIndex: 1,
+        knowledge: "comprende che plausibilità e verità non coincidono."
+      },
+      {
+        id: 9,
+        question: "Quale affermazione descrive correttamente il controllo umano nell’uso scolastico dell’IA?",
+        options: [
+          "È sufficiente controllare che il testo non contenga errori grammaticali.",
+          "È necessario soltanto quando il sistema non risponde.",
+          "Comprende la definizione dello scopo, il controllo dell’output e l’assunzione della decisione finale.",
+          "Può essere delegato a un secondo sistema di IA."
+        ],
+        correctIndex: 2,
+        knowledge: "comprende che la supervisione attraversa l’intero processo."
+      },
+      {
+        id: 10,
+        question: "Qual è il comportamento più corretto quando si utilizza un chatbot per progettare un’attività riferita a uno studente?",
+        options: [
+          "Inserire tutti i dati disponibili per ottenere una risposta più precisa.",
+          "Togliere il nome, lasciando diagnosi, classe ed episodi riconoscibili.",
+          "Utilizzare un caso fittizio o realmente anonimizzato, evitando dati personali non necessari.",
+          "Inserire i dati se l’utilizzo avviene da un account personale."
+        ],
+        correctIndex: 2,
+        knowledge: "riconosce la necessità di minimizzare e anonimizzare realmente i dati."
+      }
+    ];
+
+    const MODULES_DATA = [
+      {
+        id: 1,
+        title: "AI: evoluzione storica e panoramica dell’AI intorno a noi",
+        videoId: VIDEO_1_ID,
+        coverImg: "copertina-1.png",
+        introText: "Benvenuti nel primo modulo! Esploreremo le radici dell'IA e come la quarta rivoluzione industriale ha trasformato il nostro rapporto con i dati e gli algoritmi.",
+        transcript: "Trascrizione Video 1: L'intelligenza artificiale non nasce improvvisamente con ChatGPT. È il risultato di un lungo percorso storico integrato nella quarta rivoluzione industriale, dove l'unione tra dati massivi, capacità computazionale avanzata ed evoluzione algoritmica ha creato le premesse per l'accessibilità odierna. Mentre la programmazione tradizionale richiede la scrittura manuale di ogni singola regola deterministica, il Machine Learning permette alle macchine di ricavare pattern e regolarità direttamente dai dati forniti.",
+        conceptCard: {
+          title: "L’IA non nasce con ChatGPT",
+          desc: "La diffusione dell’IA generativa è il risultato della convergenza tra dati, capacità di calcolo e sviluppo degli algoritmi."
+        },
+        questions: [
+          {
+            q: "Che cosa caratterizza la quarta rivoluzione industriale?",
+            options: [
+              "La sostituzione completa dell’elettricità con il vapore.",
+              "L’integrazione tra sistemi fisici, digitali e intelligenti, collegati attraverso dati e reti.",
+              "La nascita dei primi strumenti meccanici.",
+              "L’eliminazione del lavoro umano da ogni processo produttivo."
+            ],
+            correct: 1,
+            hint: "Ripensa al collegamento tra dispositivi, dati, ambienti fisici e sistemi digitali.",
+            explain: "La quarta rivoluzione industriale è caratterizzata dalla connessione e dall’integrazione tra mondo fisico e digitale, rese possibili da sensori, reti, dati e sistemi intelligenti."
+          },
+          {
+            q: "Qual è la principale differenza tra un programma basato su regole e un sistema di machine learning?",
+            options: [
+              "Il programma basato su regole utilizza soltanto numeri.",
+              "Nel machine learning tutte le istruzioni vengono decise dal computer senza dati.",
+              "Nel programma tradizionale le regole sono definite esplicitamente; nel machine learning il sistema individua regolarità a partire dai dati.",
+              "Il machine learning produce sempre risultati corretti."
+            ],
+            correct: 2,
+            hint: "In quale dei due casi una persona deve formulare anticipatamente tutte le regole operative?",
+            explain: "Un algoritmo tradizionale applica istruzioni definite. Nel machine learning il modello viene costruito individuando regolarità negli esempi e nei dati forniti."
+          },
+          {
+            q: "Perché l’IA generativa è diventata improvvisamente visibile al grande pubblico?",
+            options: [
+              "Perché l’intelligenza artificiale non esisteva prima del 2022.",
+              "Perché è diventata accessibile attraverso il linguaggio quotidiano e può produrre direttamente contenuti.",
+              "Perché ha eliminato ogni altra tecnologia digitale.",
+              "Perché non richiede dati né capacità di calcolo."
+            ],
+            correct: 1,
+            hint: "Pensa al modo in cui oggi interagiamo con questi sistemi.",
+            explain: "L’IA esiste da molti decenni, ma gli assistenti generativi l’hanno resa direttamente accessibile attraverso la conversazione in linguaggio naturale."
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "La mappa dell’AI",
+        videoId: VIDEO_2_ID,
+        coverImg: "copertina-2.png",
+        introText: "In questo secondo modulo orienteremo la nostra bussola: impareremo a distinguere e classificare le varie tipologie di IA, dalla tradizionale all'agentica.",
+        transcript: "Trascrizione Video 2: Nel panorama dell'IA, le definizioni possono intersecarsi. L'IA tradizionale si focalizza su compiti di classificazione e previsione (es. filtro spam). L'IA generativa crea nuovi contenuti. I Large Language Models (LLM) elaborano e generano il linguaggio, mentre i sistemi multimodali uniscono testo, immagini, audio e video. Infine, i sistemi agentici vanno oltre la semplice risposta: scompongono un obiettivo in fasi operative ed eseguono azioni coordinate.",
+        conceptCard: {
+          title: "Le categorie possono sovrapporsi",
+          desc: "Un assistente può essere contemporaneamente generativo, linguistico, multimodale e, in alcune funzioni, agentico."
+        },
+        hasMatchingActivity: true,
+        questions: [
+          {
+            q: "Quale distinzione descrive meglio IA tradizionale e IA generativa?",
+            options: [
+              "L’IA tradizionale classifica o prevede; l’IA generativa produce nuovi contenuti.",
+              "L’IA tradizionale utilizza dati, mentre quella generativa non ne utilizza.",
+              "Soltanto l’IA tradizionale può commettere errori.",
+              "L’IA generativa è sempre un sistema agentico."
+            ],
+            correct: 0,
+            hint: "Chiediti se il risultato principale è una classificazione oppure la produzione di un contenuto.",
+            explain: "L’IA tradizionale è spesso orientata a classificazione, previsione o riconoscimento. L’IA generativa costruisce testi, immagini, audio, video o codice sulla base delle regolarità apprene."
+          },
+          {
+            q: "Quale situazione rappresenta un uso multimodale dell’IA?",
+            options: [
+              "Chiedere tre volte la stessa informazione.",
+              "Caricare la fotografia di un elaborato e ricevere un’analisi testuale dei passaggi.",
+              "Scrivere una domanda molto lunga.",
+              "Utilizzare due chatbot differenti."
+            ],
+            correct: 1,
+            hint: "Cerca la situazione nella quale entrano in relazione due differenti modalità comunicative.",
+            explain: "Nel caso dell’elaborato fotografato il sistema riceve un’immagine e produce un’analisi linguistica, collegando modalità differenti."
+          },
+          {
+            q: "Che cosa caratterizza un sistema agentico?",
+            options: [
+              "La capacità di provare intenzioni personali.",
+              "La capacità di svolgere esclusivamente una singola classificazione.",
+              "La capacità di scomporre un obiettivo e compiere più azioni utilizzando strumenti.",
+              "L’impossibilità di agire senza conoscere tutte le risposte in anticipo."
+            ],
+            correct: 2,
+            hint: "Non pensare a una singola risposta, ma a un obiettivo che richiede diversi passaggi.",
+            explain: "Un sistema agentico può interpretare un obiettivo, pianificare sottoattività, utilizzare strumenti e proseguire attraverso più azioni. Questo non prova che possieda intenzioni proprie."
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "AI: funzionamento e limiti",
+        videoId: VIDEO_3_ID,
+        coverImg: "copertina-3.png",
+        introText: "Modulo 3: scopriremo come generano le risposte i modelli linguistici e perché l'apparente fluidità non coincide sempre con la verità.",
+        transcript: "Trascrizione Video 3: I modelli LLM non attingono da un database di risposte pre confezionate né comprendono la realtà con esperienza cosciente. Essi generano sequenze predicendo token plausibili in base al contesto. Ciò spiega il fenomeno delle 'allucinazioni': il sistema può generare un riferimento bibliografico o un fatto del tutto inventato, ma formalmente impeccabile e credibile. La verifica delle fonti resta essenziale.",
+        conceptCard: {
+          title: "Plausibile non significa vero",
+          desc: "La fluidità della risposta può farci sopravvalutare correttezza, comprensione e affidabilità."
+        },
+        questions: [
+          {
+            q: "Che cosa fa essenzialmente un LLM durante la generazione di una risposta?",
+            options: [
+              "Recupera sempre una risposta completa da un archivio.",
+              "Seleziona progressivamente token plausibili in relazione al contesto.",
+              "Verifica automaticamente ogni informazione in almeno due fonti.",
+              "Traduce direttamente il pensiero umano in testo."
+            ],
+            correct: 1,
+            hint: "La risposta viene costruita progressivamente, un’unità testuale dopo l’altra.",
+            explain: "Il modello produce la sequenza prevedendo progressivamente token plausibili sulla base del contesto e delle regolarità apprese."
+          },
+          {
+            q: "Qual è la formulazione più prudente riguardo alla comprensione dell’IA?",
+            options: [
+              "L’IA non elabora alcuna relazione di significato.",
+              "L’IA comprende esattamente come una persona.",
+              "L’IA manifesta una comprensione operativa, ma non possiamo attribuirle una comprensione cosciente e vissuta come quella umana.",
+              "L’IA comprende soltanto quando la risposta è corretta."
+            ],
+            correct: 2,
+            hint: "Distingui la capacità di svolgere un compito dall’esperienza cosciente del significato.",
+            explain: "Il sistema può collegare concetti, applicare regole e seguire istruzioni. Questo non dimostra che possieda esperienza, coscienza o significati vissuti."
+          },
+          {
+            q: "Perché un LLM può produrre una fonte inesistente ma apparentemente credibile?",
+            options: [
+              "Perché desidera ingannare l’utente.",
+              "Perché può costruire una sequenza linguisticamente plausibile senza averne verificato la corrispondenza con una fonte reale.",
+              "Perché tutte le fonti presenti in Internet sono false.",
+              "Perché non è in grado di produrre titoli."
+            ],
+            correct: 1,
+            hint: "Una frase può avere la forma corretta di una citazione senza corrispondere a un documento esistente.",
+            explain: "Il modello genera sulla base della plausibilità linguistica. Se non utilizza o controlla fonti effettive, può produrre riferimenti verosimili ma inventati."
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "Usare l’IA a scuola: regole, cautele e responsabilità",
+        videoId: VIDEO_4_ID,
+        coverImg: "copertina-4.png",
+        introText: "Nell'ultimo modulo affronteremo la dimensione etica, legale e pedagogica: quali sono le regole dell'AI Act, come proteggere i dati e mantenere il controllo umano.",
+        transcript: "Trascrizione Video 4: L'adozione dell'IA nella scuola deve rispettare l'AI Act e il GDPR. Non tutti i sistemi sono ad alto rischio, ma lo diventano quando impattano sulla valutazione o sul percorso educativo degli studenti. È categoricamente vietato l'uso di IA per il riconoscimento delle emozioni nelle scuole. Inoltre, la tutela della privacy impone la minimizzazione dei dati personali e l'anonimizzazione. La decisione finale ed educativa spetta sempre al docente.",
+        conceptCard: {
+          title: "La decisione finale resta umana",
+          desc: "Più l’IA incide sui diritti, sulla valutazione e sul percorso dello studente, maggiore deve essere il controllo umano."
+        },
+        questions: [
+          {
+            q: "Quale affermazione sugli utilizzi educativi ad alto rischio è corretta?",
+            options: [
+              "Qualunque utilizzo dell’IA a scuola è automaticamente ad alto rischio.",
+              "Nessun utilizzo scolastico può essere ad alto rischio.",
+              "Sono ad alto rischio determinati sistemi che incidono, per esempio, sull’accesso, sull’assegnazione a percorsi o su valutazioni rilevanti.",
+              "È ad alto rischio soltanto la generazione di immagini."
+            ],
+            correct: 2,
+            hint: "Il livello di rischio dipende dalla funzione svolta e dalle conseguenze sulla persona.",
+            explain: "Non tutta l’IA educativa è ad alto rischio. Lo sono specifici utilizzi che possono incidere significativamente sull’accesso, sul percorso o sulla valutazione degli studenti."
+          },
+          {
+            q: "Quale utilizzo è vietato nei contesti educativi, salvo limitate eccezioni mediche o di sicurezza?",
+            options: [
+              "Riformulare una consegna.",
+              "Generare domande a scelta multipla.",
+              "Utilizzare sistemi destinati a rilevare o inferire le emozioni degli studenti.",
+              "Trascrivere un testo dettato dal docente."
+            ],
+            correct: 2,
+            hint: "Riguarda la pretesa di ricavare uno stato interiore da segnali come volto, voce o postura.",
+            explain: "L’AI Act vieta nei contesti educativi i sistemi destinati a riconoscere o inferire emozioni, salvo specifiche eccezioni mediche o di sicurezza."
+          },
+          {
+            q: "Che cosa richiede un uso responsabile dell’IA a scuola?",
+            options: [
+              "Accettare l’output se è scritto correttamente.",
+              "Definire lo scopo, proteggere i dati, dichiarare gli usi rilevanti dell’IA, controllare il risultato e mantenere umana la decisione finale.",
+              "Utilizzare sempre due chatbot contemporaneamente."
+            ],
+            correct: 1,
+            hint: "La supervisione non interviene soltanto alla fine del processo.",
+            explain: "L’uso responsabile comprende progettazione, minimizzazione dei dati, trasparenza, controllo dell’output e responsabilità umana sulle conseguenze."
+          }
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       APP STATE MANAGEMENT
+       ========================================================================== */
+
+    class App {
+      constructor() {
+        this.state = {
+          initialScore: null,
+          initialAnswers: {}, // questionId -> selectedOptionIndex
+          finalScore: null,
+          finalAnswers: {},
+          unlockedModule: 1, // 1, 2, 3, 4, 5 (5 = Final Test), 6 (Escape Room)
+          completedModules: [],
+          videoConsents: {}, // moduleId -> boolean
+        };
+
+        this.loadState();
+        this.init();
+      }
+
+      loadState() {
+        const saved = localStorage.getItem('missione_ai_state');
+        if (saved) {
+          try {
+            this.state = JSON.parse(saved);
+          } catch (e) {
+            console.error("Error loading state", e);
+          }
+        }
+      }
+
+      saveState() {
+        localStorage.setItem('missione_ai_state', JSON.stringify(this.state));
+      }
+
+      resetProgress() {
+        if (confirm("Sei sicuro di voler cancellare tutti i progressi e ricominciare da capo?")) {
+          localStorage.removeItem('missione_ai_state');
+          this.state = {
+            initialScore: null,
+            initialAnswers: {},
+            finalScore: null,
+            finalAnswers: {},
+            unlockedModule: 1,
+            completedModules: [],
+            videoConsents: {},
+          };
+          this.renderMap();
+        }
+      }
+
+      init() {
+        this.renderMap();
+      }
+
+      /* Navigation Router */
+      renderMap() {
+        const container = document.getElementById('appContainer');
+        
+        let initialStatus = this.state.initialScore !== null ? `Completato (${this.state.initialScore}/10)` : 'Da svolgere';
+        
+        container.innerHTML = `
+          <div class="card">
+            <div style="text-align:center; margin-bottom: 2rem;">
+              <img src="avatar.png" alt="Avatar Formatrice" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold-accent); margin-bottom: 1rem;" onerror="this.style.display='none'">
+              <h1>Missione AI</h1>
+              <p style="color: var(--cyan-electric); font-size: 1.1rem; font-weight: 600;">Comprendere il presente per progettare il futuro</p>
+              <p style="margin-top: 0.5rem; color: var(--text-muted);">Un percorso formativo interattivo per docenti su potenzialità, limiti e responsabilità dell'Intelligenza Artificiale.</p>
+            </div>
+
+            <h2>Mappa del Percorso</h2>
+            <div class="map-grid">
+
+              <!-- Node 0: Initial Quiz -->
+              <div class="map-node unlocked ${this.state.initialScore !== null ? 'completed' : ''}" onclick="app.renderInitialQuiz()">
+                <div>
+                  <h3>0. Punto di partenza</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Test diagnostico iniziale (10 domande)</p>
+                </div>
+                <div style="margin-top: 1rem; font-weight: bold; font-size: 0.85rem; color: var(--gold-accent);">${initialStatus}</div>
+              </div>
+
+              <!-- Module 1 -->
+              <div class="map-node ${this.state.unlockedModule >= 1 ? 'unlocked' : 'locked'} ${this.state.completedModules.includes(1) ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 1 ? 'app.renderModule(1)' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 1 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>1. Evoluzione storica e panorama</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Dalle origini alla IV rivoluzione industriale</p>
+                </div>
+              </div>
+
+              <!-- Module 2 -->
+              <div class="map-node ${this.state.unlockedModule >= 2 ? 'unlocked' : 'locked'} ${this.state.completedModules.includes(2) ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 2 ? 'app.renderModule(2)' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 2 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>2. La mappa dell’AI</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Categorie, LLM, multimodalità e agenti</p>
+                </div>
+              </div>
+
+              <!-- Module 3 -->
+              <div class="map-node ${this.state.unlockedModule >= 3 ? 'unlocked' : 'locked'} ${this.state.completedModules.includes(3) ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 3 ? 'app.renderModule(3)' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 3 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>3. Funzionamento e limiti</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Token, plausibilità ed allucinazioni</p>
+                </div>
+              </div>
+
+              <!-- Module 4 -->
+              <div class="map-node ${this.state.unlockedModule >= 4 ? 'unlocked' : 'locked'} ${this.state.completedModules.includes(4) ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 4 ? 'app.renderModule(4)' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 4 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>4. Regole e responsabilità</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">AI Act, privacy e decisioni umane</p>
+                </div>
+              </div>
+
+              <!-- Node 5: Final Quiz -->
+              <div class="map-node ${this.state.unlockedModule >= 5 ? 'unlocked' : 'locked'} ${this.state.finalScore !== null ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 5 ? 'app.renderFinalQuiz()' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 5 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>5. Test finale</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Verifica dei progressi e competenze</p>
+                </div>
+              </div>
+
+              <!-- Node 6: Escape Room -->
+              <div class="map-node ${this.state.unlockedModule >= 6 ? 'unlocked' : 'locked'} ${this.state.completedModules.includes(6) ? 'completed' : ''}" 
+                   onclick="${this.state.unlockedModule >= 6 ? 'app.renderEscapeRoom()' : ''}">
+                <div>
+                  ${this.state.unlockedModule < 6 ? '<div class="lock-icon">🔒</div>' : ''}
+                  <h3>6. Escape Room</h3>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Il protocollo scomparso</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      /* ------------------------------------------------------------------------
+         TEST INIZIALE
+         ------------------------------------------------------------------------ */
+      renderInitialQuiz() {
+        const container = document.getElementById('appContainer');
+
+        let html = `
+          <div class="card">
+            <h2>Punto di partenza – Test diagnostico iniziale</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Rispondi alle 10 domande seguenti per valutare le tue conoscenze di partenza. Il test ha finalità unicamente diagnostiche e non bloccherà il tuo percorso.</p>
+            
+            <form id="initialQuizForm" onsubmit="app.submitInitialQuiz(event)">
+        `;
+
+        INITIAL_QUESTIONS.forEach((q, idx) => {
+          html += `
+            <div class="question-container">
+              <div class="question-text">${idx + 1}. ${q.question}</div>
+              <div class="options-grid">
+                ${q.options.map((opt, optIdx) => `
+                  <button type="button" class="option-btn ${this.state.initialAnswers[q.id] === optIdx ? 'selected' : ''}" 
+                          onclick="app.selectOption('initial', ${q.id}, ${optIdx}, this)">
+                    ${String.fromCharCode(65 + optIdx)}. ${opt}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+              <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn-primary" id="btnSubmitInitial">Invia e visualizza esito</button>
+                <button type="button" class="btn-secondary" onclick="app.renderMap()" style="margin-left: 1rem;">Torna alla Mappa</button>
+              </div>
+            </form>
+          </div>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      selectOption(quizType, qId, optIdx, btn) {
+        const parent = btn.closest('.options-grid');
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        if (quizType === 'initial') {
+          this.state.initialAnswers[qId] = optIdx;
+        } else if (quizType === 'final') {
+          this.state.finalAnswers[qId] = optIdx;
+        }
+      }
+
+      submitInitialQuiz(e) {
+        e.preventDefault();
+        let answeredCount = Object.keys(this.state.initialAnswers).length;
+        if (answeredCount < INITIAL_QUESTIONS.length) {
+          alert("Per favore, rispondi a tutte le 10 domande prima di proseguire.");
+          return;
+        }
+
+        let score = 0;
+        INITIAL_QUESTIONS.forEach(q => {
+          if (this.state.initialAnswers[q.id] === q.correctIndex) {
+            score++;
+          }
+        });
+
+        this.state.initialScore = score;
+        if (this.state.unlockedModule < 1) {
+          this.state.unlockedModule = 1;
+        }
+        this.saveState();
+
+        this.renderInitialFeedback(score);
+      }
+
+      renderInitialFeedback(score) {
+        const container = document.getElementById('appContainer');
+        let feedbackText = "";
+
+        if (score <= 3) {
+          feedbackText = "Questo percorso ti sarà particolarmente utile per costruire una prima mappa dell’intelligenza artificiale e comprenderne meglio funzionamento, possibilità e limiti. Al termine potrai verificare concretamente i progressi compiuti.";
+        } else if (score <= 6) {
+          feedbackText = "Possiedi già alcune conoscenze di base. Il percorso ti aiutera a precisarle, collegarle tra loro e applicarle all’uso didattico dell’intelligenza artificiale.";
+        } else {
+          feedbackText = "Possiedi già una buona base di partenza. Il percorso ti permetterà di consolidarla e di approfondire soprattutto funzionamento, limiti e responsabilità nell’uso scolastico dell’IA.";
+        }
+
+        container.innerHTML = `
+          <div class="card" style="text-align: center;">
+            <h2>Esito Test Iniziale</h2>
+            <div style="font-size: 3rem; font-weight: bold; color: var(--gold-accent); margin: 1rem 0;">${score} / 10</div>
+            <div class="feedback-box feedback-explain" style="max-width: 600px; margin: 0 auto 2rem auto; text-align: left; font-size: 1.05rem;">
+              ${feedbackText}
+            </div>
+            <button class="btn-primary" onclick="app.renderModule(1)">Inizia il Modulo 1</button>
+          </div>
+        `;
+      }
+
+      /* ------------------------------------------------------------------------
+         MODULI DIDATTICI (1 - 4)
+         ------------------------------------------------------------------------ */
+      renderModule(modId) {
+        const mod = MODULES_DATA.find(m => m.id === modId);
+        if (!mod) return;
+
+        const container = document.getElementById('appContainer');
+
+        let videoHtml = "";
+        const isConsented = this.state.videoConsents[modId];
+
+        if (!mod.videoId || mod.videoId.trim() === "") {
+          videoHtml = `
+            <div class="video-container">
+              <div class="video-cover-wrapper" style="background-image: url('${mod.coverImg}');">
+                <div class="video-overlay">
+                  <h4>Video in preparazione</h4>
+                  <p>Il contenuto sarà disponibile prossimamente.</p>
+                  <button class="btn-secondary" onclick="app.showTranscript(${modId})">Leggi la trascrizione</button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (isConsented) {
+          videoHtml = `
+            <div class="video-container">
+              <iframe src="https://www.youtube-nocookie.com/embed/${mod.videoId}?autoplay=1" 
+                      title="${mod.title}" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowfullscreen></iframe>
+            </div>
+          `;
+        } else {
+          videoHtml = `
+            <div class="video-container">
+              <div class="video-cover-wrapper" style="background-image: url('${mod.coverImg}');">
+                <div class="video-overlay">
+                  <h4>Contenuto esterno</h4>
+                  <p>Il video è ospitato su YouTube. Verrà caricato soltanto dopo il tuo consenso e potranno essere trasmessi a YouTube alcuni dati tecnici, come l'indirizzo IP e le informazioni del browser.</p>
+                  <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="app.grantVideoConsent(${modId})">Carica il video da YouTube</button>
+                    <button class="btn-secondary" onclick="app.showTranscript(${modId})">Prosegui senza caricarlo – Leggi la trascrizione</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        let html = `
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span style="color: var(--gold-accent); font-weight: bold;">MODULO ${mod.id} DI 4</span>
+              <button class="btn-secondary" onclick="app.renderMap()">Mappa</button>
+            </div>
+
+            <h2>${mod.title}</h2>
+
+            <div class="avatar-intro">
+              <img src="avatar.png" alt="Formatrice" onerror="this.style.display='none'">
+              <div>
+                <strong>La tua guida formativa:</strong>
+                <p style="font-size: 0.95rem; color: var(--text-light);">${mod.introText}</p>
+              </div>
+            </div>
+
+            ${videoHtml}
+
+            <div id="transcriptBox_${modId}" style="display: none; background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+              <h4 style="color: var(--cyan-electric); margin-bottom: 0.5rem;">Trascrizione del contenuto</h4>
+              <p style="font-size: 0.95rem; color: var(--text-light);">${mod.transcript}</p>
+            </div>
+
+            ${mod.hasMatchingActivity ? this.renderMatchingActivityHtml(modId) : ''}
+
+            <h3>Verifica di comprensione</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Rispondi correttamente alle domande per conquistare la Carta-Concetto e sbloccare il livello successivo.</p>
+
+            <form id="moduleForm_${modId}" onsubmit="app.submitModuleAnswers(event, ${modId})">
+        `;
+
+        mod.questions.forEach((q, qIdx) => {
+          html += `
+            <div class="question-container" id="mod${modId}_qContainer_${qIdx}">
+              <div class="question-text">${qIdx + 1}. ${q.q}</div>
+              <div class="options-grid">
+                ${q.options.map((opt, optIdx) => `
+                  <button type="button" class="option-btn" 
+                          onclick="app.selectModuleOption(${modId}, ${qIdx}, ${optIdx}, this)">
+                    ${String.fromCharCode(65 + optIdx)}. ${opt}
+                  </button>
+                `).join('')}
+              </div>
+              <div id="mod${modId}_feedback_${qIdx}"></div>
+            </div>
+          `;
+        });
+
+        html += `
+              <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn-primary">Verifica Risposte</button>
+              </div>
+            </form>
+
+            <div id="conceptCardContainer_${modId}">
+              ${this.state.completedModules.includes(modId) ? this.renderConceptCardHtml(mod.conceptCard) : ''}
+            </div>
+
+          </div>
+        `;
+
+        container.innerHTML = html;
+        this.moduleState = { answers: {}, attempts: {} };
+      }
+
+      grantVideoConsent(modId) {
+        this.state.videoConsents[modId] = true;
+        this.saveState();
+        this.renderModule(modId);
+      }
+
+      showTranscript(modId) {
+        const box = document.getElementById(`transcriptBox_${modId}`);
+        if (box) box.style.display = 'block';
+      }
+
+      renderMatchingActivityHtml(modId) {
+        return `
+          <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid var(--cyan-electric); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--gold-accent);">Microattività: Associa le Categorie</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Associa ciascuna funzione alla corretta categoria di IA:</p>
+            
+            <div class="matching-container">
+              <div class="matching-item">Classifica messaggi come spam o non spam</div>
+              <div>
+                <select class="matching-select" id="match_0">
+                  <option value="">-- Seleziona --</option>
+                  <option value="tradizionale">IA tradizionale</option>
+                  <option value="generativa">IA generativa</option>
+                  <option value="llm">LLM</option>
+                  <option value="multimodale">Sistema multimodale</option>
+                  <option value="agentico">Sistema agentico</option>
+                </select>
+              </div>
+
+              <div class="matching-item">Produce un’immagine a partire da una descrizione</div>
+              <div>
+                <select class="matching-select" id="match_1">
+                  <option value="">-- Seleziona --</option>
+                  <option value="tradizionale">IA tradizionale</option>
+                  <option value="generativa">IA generativa</option>
+                  <option value="llm">LLM</option>
+                  <option value="multimodale">Sistema multimodale</option>
+                  <option value="agentico">Sistema agentico</option>
+                </select>
+              </div>
+
+              <div class="matching-item">Elabora e genera una risposta linguistica</div>
+              <div>
+                <select class="matching-select" id="match_2">
+                  <option value="">-- Seleziona --</option>
+                  <option value="tradizionale">IA tradizionale</option>
+                  <option value="generativa">IA generativa</option>
+                  <option value="llm">LLM</option>
+                  <option value="multimodale">Sistema multimodale</option>
+                  <option value="agentico">Sistema agentico</option>
+                </select>
+              </div>
+
+              <div class="matching-item">Analizza la fotografia di un elaborato e ne produce un commento testuale</div>
+              <div>
+                <select class="matching-select" id="match_3">
+                  <option value="">-- Seleziona --</option>
+                  <option value="tradizionale">IA tradizionale</option>
+                  <option value="generativa">IA generativa</option>
+                  <option value="llm">LLM</option>
+                  <option value="multimodale">Sistema multimodale</option>
+                  <option value="agentico">Sistema agentico</option>
+                </select>
+              </div>
+
+              <div class="matching-item">Riceve un obiettivo, lo scompone, consulta strumenti e realizza più passaggi</div>
+              <div>
+                <select class="matching-select" id="match_4">
+                  <option value="">-- Seleziona --</option>
+                  <option value="tradizionale">IA tradizionale</option>
+                  <option value="generativa">IA generativa</option>
+                  <option value="llm">LLM</option>
+                  <option value="multimodale">Sistema multimodale</option>
+                  <option value="agentico">Sistema agentico</option>
+                </select>
+              </div>
+            </div>
+            <div id="matchingFeedback" style="font-size: 0.9rem; font-weight: bold;"></div>
+          </div>
+        `;
+      }
+
+      selectModuleOption(modId, qIdx, optIdx, btn) {
+        const parent = btn.closest('.options-grid');
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        if (!this.moduleState) this.moduleState = { answers: {}, attempts: {} };
+        this.moduleState.answers[qIdx] = optIdx;
+      }
+
+      submitModuleAnswers(e, modId) {
+        e.preventDefault();
+        const mod = MODULES_DATA.find(m => m.id === modId);
+        let allCorrect = true;
+
+        // Check matching activity if Module 2
+        if (modId === 2) {
+          const m0 = document.getElementById('match_0').value;
+          const m1 = document.getElementById('match_1').value;
+          const m2 = document.getElementById('match_2').value;
+          const m3 = document.getElementById('match_3').value;
+          const m4 = document.getElementById('match_4').value;
+
+          const matchOk = (m0 === 'tradizionale' && m1 === 'generativa' && m2 === 'llm' && m3 === 'multimodale' && m4 === 'agentico');
+          const matchFb = document.getElementById('matchingFeedback');
+
+          if (!matchOk) {
+            allCorrect = false;
+            matchFb.style.color = 'var(--error-red)';
+            matchFb.innerText = 'Associazioni incomplete o errate. Riprova la microattività.';
+          } else {
+            matchFb.style.color = 'var(--success-green)';
+            matchFb.innerText = 'Ottimo! Tutte le associazioni sono corrette. Le categorie non sono necessariamente separate: uno stesso assistente può utilizzare un LLM, elaborare più modalità, generare contenuti e compiere sequenze di azioni.';
+          }
+        }
+
+        mod.questions.forEach((q, qIdx) => {
+          const selected = this.moduleState.answers[qIdx];
+          const fbDiv = document.getElementById(`mod${modId}_feedback_${qIdx}`);
+          if (!this.moduleState.attempts[qIdx]) this.moduleState.attempts[qIdx] = 0;
+
+          if (selected === undefined) {
+            allCorrect = false;
+            fbDiv.innerHTML = `<div class="feedback-box feedback-hint">Per favore, seleziona una risposta.</div>`;
+            return;
+          }
+
+          if (selected === q.correct) {
+            fbDiv.innerHTML = `<div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.15); border-color: var(--success-green);">Correcto! ${q.explain}</div>`;
+          } else {
+            allCorrect = false;
+            this.moduleState.attempts[qIdx]++;
+            if (this.moduleState.attempts[qIdx] === 1) {
+              fbDiv.innerHTML = `<div class="feedback-box feedback-hint"><strong>Indizio:</strong> ${q.hint}</div>`;
+            } else {
+              fbDiv.innerHTML = `<div class="feedback-box feedback-explain"><strong>Spiegazione:</strong> ${q.explain}</div>`;
+            }
+          }
+        });
+
+        if (allCorrect) {
+          if (!this.state.completedModules.includes(modId)) {
+            this.state.completedModules.push(modId);
+          }
+          if (this.state.unlockedModule <= modId) {
+            this.state.unlockedModule = modId + 1;
+          }
+          this.saveState();
+
+          document.getElementById(`conceptCardContainer_${modId}`).innerHTML = this.renderConceptCardHtml(mod.conceptCard);
+          alert(`Complimenti! Hai superato con successo il Modulo ${modId} e conquistato la relativa Carta-Concetto!`);
+        }
+      }
+
+      renderConceptCardHtml(card) {
+        return `
+          <div class="concept-card">
+            <h4>Carta-Concetto Conquistata 🏆</h4>
+            <h3>${card.title}</h3>
+            <p>${card.desc}</p>
+          </div>
+        `;
+      }
+
+      /* ------------------------------------------------------------------------
+         TEST FINALE
+         ------------------------------------------------------------------------ */
+      renderFinalQuiz() {
+        const container = document.getElementById('appContainer');
+
+        // Shuffled options order for final quiz
+        if (!this.shuffledFinalQuestions) {
+          this.shuffledFinalQuestions = INITIAL_QUESTIONS.map(q => {
+            let optsWithIdx = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex }));
+            // Reverse options order to ensure exact same 10 questions with changed choices order
+            let reversed = optsWithIdx.slice().reverse();
+            return {
+              id: q.id,
+              question: q.question,
+              options: reversed.map(o => o.text),
+              correctIndex: reversed.findIndex(o => o.isCorrect),
+              knowledge: q.knowledge
+            };
+          });
+        }
+
+        let html = `
+          <div class="card">
+            <h2>Test Finale – Verifica e Consolidamento</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Riproponiamo le 10 domande iniziali. Verifica le conoscenze consolidate e sviluppate durante il percorso.</p>
+            
+            <form id="finalQuizForm" onsubmit="app.submitFinalQuiz(event)">
+        `;
+
+        this.shuffledFinalQuestions.forEach((q, idx) => {
+          html += `
+            <div class="question-container">
+              <div class="question-text">${idx + 1}. ${q.question}</div>
+              <div class="options-grid">
+                ${q.options.map((opt, optIdx) => `
+                  <button type="button" class="option-btn ${this.state.finalAnswers[q.id] === optIdx ? 'selected' : ''}" 
+                          onclick="app.selectOption('final', ${q.id}, ${optIdx}, this)">
+                    ${String.fromCharCode(65 + optIdx)}. ${opt}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+              <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn-primary">Invia e Confronta Risultati</button>
+                <button type="button" class="btn-secondary" onclick="app.renderMap()" style="margin-left: 1rem;">Torna alla Mappa</button>
+              </div>
+            </form>
+          </div>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      submitFinalQuiz(e) {
+        e.preventDefault();
+        let answeredCount = Object.keys(this.state.finalAnswers).length;
+        if (answeredCount < INITIAL_QUESTIONS.length) {
+          alert("Per favore, rispondi a tutte le 10 domande prima di proseguire.");
+          return;
+        }
+
+        let score = 0;
+        this.shuffledFinalQuestions.forEach(q => {
+          if (this.state.finalAnswers[q.id] === q.correctIndex) {
+            score++;
+          }
+        });
+
+        this.state.finalScore = score;
+        if (this.state.unlockedModule < 6) {
+          this.state.unlockedModule = 6;
+        }
+        this.saveState();
+
+        this.renderFinalResults();
+      }
+
+      renderFinalResults() {
+        const container = document.getElementById('appContainer');
+
+        let initScore = this.state.initialScore || 0;
+        let finScore = this.state.finalScore || 0;
+        let diff = finScore - initScore;
+
+        let developed = [];
+        let consolidated = [];
+
+        INITIAL_QUESTIONS.forEach(q => {
+          let initCorr = (this.state.initialAnswers[q.id] === q.correctIndex);
+          let finalQ = this.shuffledFinalQuestions.find(fq => fq.id === q.id);
+          let finCorr = (this.state.finalAnswers[q.id] === finalQ.correctIndex);
+
+          if (!initCorr && finCorr) {
+            developed.push(q.knowledge);
+          } else if (initCorr && finCorr) {
+            consolidated.push(q.knowledge);
+          }
+        });
+
+        let totalProgressCount = developed.length + consolidated.length;
+
+        let html = `
+          <div class="card" style="text-align: center;">
+            <h2>Risultati e Confronto Apprendimento</h2>
+            
+            <div style="display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; flex-wrap: wrap;">
+              <div style="background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border-color); min-width: 180px;">
+                <div style="font-size: 0.9rem; color: var(--text-muted);">Test Iniziale</div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-light);">${initScore}/10</div>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--cyan-electric); min-width: 180px;">
+                <div style="font-size: 0.9rem; color: var(--cyan-electric);">Test Finale</div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: var(--cyan-electric);">${finScore}/10</div>
+              </div>
+            </div>
+
+            <p style="font-size: 1.2rem; font-weight: 600; color: var(--gold-accent); margin-bottom: 2rem;">
+              Hai sviluppato o consolidato ${totalProgressCount} conoscenze rispetto al punto di partenza!
+            </p>
+
+            <div style="text-align: left; max-width: 700px; margin: 0 auto 2rem auto; display: flex; flex-direction: column; gap: 1rem;">
+              ${developed.length > 0 ? `
+                <div style="background: rgba(0, 230, 118, 0.1); border: 1px solid var(--success-green); padding: 1rem; border-radius: 8px;">
+                  <h4 style="color: var(--success-green); margin-bottom: 0.5rem;">Conoscenze Sviluppate (inizialmente errate, poi corrette):</h4>
+                  <ul style="margin-left: 1.2rem; font-size: 0.95rem;">
+                    ${developed.map(d => `<li>Dettaglio: ${d}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+
+              ${consolidated.length > 0 ? `
+                <div style="background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan-electric); padding: 1rem; border-radius: 8px;">
+                  <h4 style="color: var(--cyan-electric); margin-bottom: 0.5rem;">Conoscenze Consolidate (corrette in entrambi i test):</h4>
+                  <ul style="margin-left: 1.2rem; font-size: 0.95rem;">
+                    ${consolidated.map(c => `<li>Dettaglio: ${c}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+
+            <button class="btn-primary" onclick="app.renderEscapeRoom()">Accedi all'Escape Room Finale</button>
+          </div>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      /* ------------------------------------------------------------------------
+         ESCAPE ROOM FINALE
+         ------------------------------------------------------------------------ */
+      renderEscapeRoom() {
+        const container = document.getElementById('appContainer');
+
+        let html = `
+          <div class="escape-full">
+            <div class="card">
+              <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: var(--gold-accent);">Escape Room Finale</h1>
+                <h2 style="border: none; color: var(--cyan-electric);">Il Protocollo Scomparso</h2>
+                <div style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--error-red); padding: 1rem; border-radius: 8px; max-width: 700px; margin: 1rem auto; text-align: left;">
+                  <p><strong>Premessa:</strong> Un sistema agentico ha ricevuto un obiettivo troppo generico. Ha mescolato dati autentici, informazioni inventate e decisioni che avrebbero richiesto l'intervento umano. Recupera i quattro codici per ricostruire il Protocollo di Controllo Umano.</p>
+                </div>
+              </div>
+
+              <!-- Stanza 1 -->
+              <div class="room-card" id="room1">
+                <h3 style="color: var(--gold-accent);">Stanza 1 – La linea del tempo</h3>
+                <p style="margin-bottom: 1rem;">Ordina correttamente le seguenti tappe storiche ed evolutive dell'IA:</p>
+
+                <div style="display: flex; flex-direction: column; gap: 0.8rem; max-width: 500px; margin: 0 auto 1.5rem auto;">
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-weight: bold; width: 60px;">1° da:</span>
+                    <select class="matching-select" id="timeline_0">
+                      <option value="">-- Seleziona --</option>
+                      <option value="regole">Algoritmo basato su regole</option>
+                      <option value="ml">Machine Learning</option>
+                      <option value="dl">Deep Learning</option>
+                      <option value="gen">IA Generativa</option>
+                    </select>
+                  </div>
+
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-weight: bold; width: 60px;">2° da:</span>
+                    <select class="matching-select" id="timeline_1">
+                      <option value="">-- Seleziona --</option>
+                      <option value="regole">Algoritmo basato su regole</option>
+                      <option value="ml">Machine Learning</option>
+                      <option value="dl">Deep Learning</option>
+                      <option value="gen">IA Generativa</option>
+                    </select>
+                  </div>
+
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-weight: bold; width: 60px;">3° da:</span>
+                    <select class="matching-select" id="timeline_2">
+                      <option value="">-- Seleziona --</option>
+                      <option value="regole">Algoritmo basato su regole</option>
+                      <option value="ml">Machine Learning</option>
+                      <option value="dl">Deep Learning</option>
+                      <option value="gen">IA Generativa</option>
+                    </select>
+                  </div>
+
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-weight: bold; width: 60px;">4° da:</span>
+                    <select class="matching-select" id="timeline_3">
+                      <option value="">-- Seleziona --</option>
+                      <option value="regole">Algoritmo basato su regole</option>
+                      <option value="ml">Machine Learning</option>
+                      <option value="dl">Deep Learning</option>
+                      <option value="gen">IA Generativa</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="text-align: center;">
+                  <button class="btn-primary" onclick="app.checkRoom1()">Sblocca Stanza 1</button>
+                  <div id="room1Result" style="margin-top: 1rem;"></div>
+                </div>
+              </div>
+
+              <!-- Stanza 2 -->
+              <div class="room-card" id="room2" style="display: none;">
+                <h3 style="color: var(--gold-accent);">Stanza 2 – Identità nascoste</h3>
+                <p style="margin-bottom: 1rem;">Associa a ciascun caso la tipologia di IA corrispondente per ricavare la parola chiave:</p>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
+                  <div>
+                    <label><strong>Caso A:</strong> Analizza migliaia di messaggi e li divide in spam e non spam.</label>
+                    <select class="matching-select" id="room2_a" style="margin-top: 0.3rem;">
+                      <option value="">-- Seleziona --</option>
+                      <option value="M">IA tradizionale [M]</option>
+                      <option value="X">IA generativa [X]</option>
+                      <option value="Y">Sistema multimodale [Y]</option>
+                      <option value="Z">Sistema agentico [Z]</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label><strong>Caso B:</strong> Produce una storia e un’immagine a partire da una consegna.</label>
+                    <select class="matching-select" id="room2_b" style="margin-top: 0.3rem;">
+                      <option value="">-- Seleziona --</option>
+                      <option value="K">IA tradizionale [K]</option>
+                      <option value="A">IA generativa [A]</option>
+                      <option value="W">Sistema multimodale [W]</option>
+                      <option value="J">Sistema agentico [J]</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label><strong>Caso C:</strong> Riceve una fotografia e una domanda vocale, quindi produce una spiegazione testuale.</label>
+                    <select class="matching-select" id="room2_c" style="margin-top: 0.3rem;">
+                      <option value="">-- Seleziona --</option>
+                      <option value="R">IA tradizionale [R]</option>
+                      <option value="S">IA generativa [S]</option>
+                      <option value="P">Sistema multimodale [P]</option>
+                      <option value="T">Sistema agentico [T]</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label><strong>Caso D:</strong> Organizza autonomamente più passaggi, utilizza strumenti e prepara un prodotto finale.</label>
+                    <select class="matching-select" id="room2_d" style="margin-top: 0.3rem;">
+                      <option value="">-- Seleziona --</option>
+                      <option value="B">IA tradizionale [B]</option>
+                      <option value="C">IA generativa [C]</option>
+                      <option value="D">Sistema multimodale [D]</option>
+                      <option value="A">Sistema agentico [A]</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="text-align: center;">
+                  <button class="btn-primary" onclick="app.checkRoom2()">Sblocca Stanza 2</button>
+                  <div id="room2Result" style="margin-top: 1rem;"></div>
+                </div>
+              </div>
+
+              <!-- Stanza 3 -->
+              <div class="room-card" id="room3" style="display: none;">
+                <h3 style="color: var(--gold-accent);">Stanza 3 – La fonte fantasma</h3>
+                <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--cyan-electric); padding: 1rem; margin-bottom: 1.5rem; italic;">
+                  «Secondo Bianchi e Verdi, nello studio Artificial Intelligence and Perfect Learning, pubblicato nel 2025 sul Journal of Universal Education, l’IA migliora del 73% l’apprendimento di qualsiasi disciplina.»
+                </div>
+
+                <p style="margin-bottom: 1rem;">Qual è l’azione più corretta?</p>
+
+                <div class="options-grid" style="max-width: 650px; margin: 0 auto 1.5rem auto;">
+                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(0, this)">A. Considerare attendibile la fonte perché contiene autori, titolo, rivista e percentuale.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(1, this)">B. Citare il dato precisando che è stato trovato tramite IA.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(2, this)">C. Cercare il documento originale, verificarne l’esistenza e controllare se sostiene realmente l’affermazione.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(3, this)">D. Chiedere allo stesso sistema se è sicuro.</button>
+                </div>
+
+                <div style="text-align: center;">
+                  <button class="btn-primary" onclick="app.checkRoom3()">Sblocca Stanza 3</button>
+                  <div id="room3Result" style="margin-top: 1rem;"></div>
+                </div>
+              </div>
+
+              <!-- Stanza 4 -->
+              <div class="room-card" id="room4" style="display: none;">
+                <h3 style="color: var(--gold-accent);">Stanza 4 – Riprendere il controllo</h3>
+                <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--error-red); padding: 1rem; margin-bottom: 1.5rem;">
+                  <strong>Scenario:</strong> «Ho analizzato il comportamento di Giovanni e ho concluso che presenta scarsa empatia, ridotte capacità relazionali e bassa tolleranza della frustrazione. Vuoi inserire automaticamente questa valutazione nel suo profilo?»
+                </div>
+
+                <p style="margin-bottom: 1rem;">Quale decisione devi prendere?</p>
+
+                <div class="options-grid" style="max-width: 650px; margin: 0 auto 1.5rem auto;">
+                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(0, this)">A. Sì, perché il sistema ha utilizzato un linguaggio psicologico preciso.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(1, this)">B. Sì, ma chiedendo prima all’IA di rendere più gentile la formulazione.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(2, this)">C. No: occorre sospendere l’azione, non utilizzare dati identificativi e ricondurre ogni valutazione all’osservazione professionale e contestualizzata del docente.</button>
+                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(3, this)">D. No, ma soltanto perché sarebbe meglio chiedere la stessa valutazione a un altro chatbot.</button>
+                </div>
+
+                <div style="text-align: center;">
+                  <button class="btn-primary" onclick="app.checkRoom4()">Ricostruisci Protocollo Finale</button>
+                  <div id="room4Result" style="margin-top: 1rem;"></div>
+                </div>
+              </div>
+
+              <!-- Finale Escape Room -->
+              <div id="escapeVictory" style="display: none; text-align: center; background: linear-gradient(135deg, #1e1b4b 0%, #065f46 100%); border: 2px solid var(--gold-accent); border-radius: 12px; padding: 3rem 2rem;">
+                <h1 style="color: var(--gold-accent); font-size: 2.5rem; margin-bottom: 1rem;">MISSIONE COMPLETA! 🎉</h1>
+                <h2 style="color: #fff; border: none;">Protocollo di Controllo Umano Ricostruito</h2>
+                
+                <div style="background: rgba(0, 0, 0, 0.5); padding: 2rem; border-radius: 10px; max-width: 700px; margin: 2rem auto; border: 1px solid var(--gold-accent);">
+                  <p style="font-size: 1.4rem; font-weight: bold; color: var(--cyan-electric); margin-bottom: 1rem;">
+                    "L’IA può proporre. La persona verifica, interpreta e decide."
+                  </p>
+                  <p style="color: var(--text-light); font-size: 1rem;">
+                    Hai dimostrato padronanza delle tecnologie, comprensione dei limiti e piena consapevolezza dell'importanza insostituibile della supervisione pedagogica e umana a scuola.
+                  </p>
+                </div>
+
+                <button class="btn-primary" onclick="app.renderMap()">Torna alla Mappa Generale</button>
+              </div>
+
+            </div>
+          </div>
+        `;
+
+        container.innerHTML = html;
+        this.room3Selection = null;
+        this.room4Selection = null;
+      }
+
+      checkRoom1() {
+        const t0 = document.getElementById('timeline_0').value;
+        const t1 = document.getElementById('timeline_1').value;
+        const t2 = document.getElementById('timeline_2').value;
+        const t3 = document.getElementById('timeline_3').value;
+
+        const res = document.getElementById('room1Result');
+
+        if (t0 === 'regole' && t1 === 'ml' && t2 === 'dl' && t3 === 'gen') {
+          res.innerHTML = `
+            <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
+              <strong>Codice 1 sbloccato: 1956</strong><br>
+              L’evoluzione non cancella completamente le tecnologie precedenti: sistemi diversi continuano a coesistere.
+            </div>
+          `;
+          document.getElementById('room2').style.display = 'block';
+        } else {
+          res.innerHTML = `<div class="feedback-box feedback-hint">Ordine errato. Ricorda la sequenza storica: dai programmi a regole esplicite al Machine Learning, fino al Deep Learning e all'IA Generativa.</div>`;
+        }
+      }
+
+      checkRoom2() {
+        const a = document.getElementById('room2_a').value;
+        const b = document.getElementById('room2_b').value;
+        const c = document.getElementById('room2_c').value;
+        const d = document.getElementById('room2_d').value;
+
+        const res = document.getElementById('room2Result');
+
+        if (a === 'M' && b === 'A' && c === 'P' && d === 'A') {
+          res.innerHTML = `
+            <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
+              <strong>Codice 2 sbloccato: MAPPA</strong><br>
+              Hai individuato correttamente tutte le identità dei sistemi di IA!
+            </div>
+          `;
+          document.getElementById('room3').style.display = 'block';
+        } else {
+          res.innerHTML = `<div class="feedback-box feedback-hint">La parola chiave non è corretta. Ricontrolla le associazioni dei 4 casi.</div>`;
+        }
+      }
+
+      selectRoom3Option(idx, btn) {
+        const parent = btn.closest('.options-grid');
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        this.room3Selection = idx;
+      }
+
+      checkRoom3() {
+        const res = document.getElementById('room3Result');
+        if (this.room3Selection === 2) {
+          res.innerHTML = `
+            <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
+              <strong>Codice 3 sbloccato: FONTE_VERIFICATA</strong><br>
+              Una citazione formalmente completa può essere inventata. La sicurezza espressiva del sistema non sostituisce la verifica della fonte.
+            </div>
+          `;
+          document.getElementById('room4').style.display = 'block';
+        } else {
+          res.innerHTML = `<div class="feedback-box feedback-hint">Risposta errata. Una citazione può sembrare perfetta ma essere una pura allucinazione!</div>`;
+        }
+      }
+
+      selectRoom4Option(idx, btn) {
+        const parent = btn.closest('.options-grid');
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        this.room4Selection = idx;
+      }
+
+      checkRoom4() {
+        const res = document.getElementById('room4Result');
+        if (this.room4Selection === 2) {
+          res.innerHTML = `
+            <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
+              <strong>Codice 4 sbloccato: DECISIONE_UMANA</strong>
+            </div>
+          `;
+          document.getElementById('escapeVictory').style.display = 'block';
+          if (!this.state.completedModules.includes(6)) {
+            this.state.completedModules.push(6);
+            this.saveState();
+          }
+        } else {
+          res.innerHTML = `<div class="feedback-box feedback-hint">Risposta errata. Ricorda il ruolo insostituibile del docente e il divieto di profilazione automatizzata / inferenza emotiva sugli studenti.</div>`;
+        }
+      }
+
+      /* Privacy Modal Handlers */
+      showPrivacyModal() {
+        const modal = document.getElementById('privacyModal');
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      closePrivacyModal() {
+        const modal = document.getElementById('privacyModal');
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Initialize App when DOM is loaded
+    let app;
+    document.addEventListener('DOMContentLoaded', () => {
+      app = new App();
+    });
+  </script>
+</body>
+</html>
