@@ -63,6 +63,21 @@
       background-color: #1e293b;
     }
 
+    .avatar-fallback {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-accent);
+      display: none;
+      place-items: center;
+      color: #07111f;
+      background: linear-gradient(135deg, var(--gold-accent), #fff3a6);
+      font-weight: 900;
+      box-shadow: 0 0 18px rgba(255, 215, 0, .28);
+    }
+
+    .avatar-missing .avatar-fallback { display: grid; }
+
     .header-title {
       font-size: 1.2rem;
       font-weight: 700;
@@ -429,16 +444,132 @@
 
     /* Escape Room Styling */
     .escape-full {
-      width: 100%;
-      max-width: 100%;
+      width: min(1280px, calc(100vw - 2rem));
+      max-width: none;
+      margin-left: 50%;
+      transform: translateX(-50%);
+      --room-glow: rgba(0, 240, 255, .22);
     }
 
+    .escape-shell {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(1rem, 3vw, 2.4rem);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(0, 102, 255, .24), transparent 34%),
+        radial-gradient(circle at 88% 8%, rgba(255, 215, 0, .12), transparent 28%),
+        linear-gradient(145deg, #07111f 0%, #0d1830 55%, #081624 100%);
+      border: 1px solid rgba(0, 240, 255, .38);
+    }
+
+    .escape-shell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .2;
+      background-image: linear-gradient(rgba(0,240,255,.16) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,.16) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, #000, transparent 65%);
+    }
+
+    .escape-hero, .protocol-console, .room-card, .escape-victory { position: relative; z-index: 1; }
+
+    .escape-kicker {
+      color: var(--cyan-electric);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .escape-title {
+      font-size: clamp(2rem, 5vw, 4.3rem);
+      line-height: 1;
+      margin: .55rem 0 .75rem;
+      background: linear-gradient(90deg, #fff, var(--cyan-electric), var(--gold-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 36px rgba(0, 240, 255, .12);
+    }
+
+    .mission-brief {
+      max-width: 850px;
+      margin: 1.25rem auto 1.7rem;
+      padding: 1.15rem 1.3rem;
+      text-align: left;
+      background: rgba(4, 11, 25, .72);
+      border: 1px solid rgba(255, 82, 82, .65);
+      border-left: 5px solid var(--error-red);
+      border-radius: 14px;
+      box-shadow: 0 12px 45px rgba(0,0,0,.3);
+    }
+
+    .protocol-console {
+      max-width: 980px;
+      margin: 0 auto 2rem;
+      padding: 1rem;
+      border: 1px solid rgba(255, 215, 0, .48);
+      border-radius: 16px;
+      background: rgba(5, 12, 26, .82);
+      box-shadow: inset 0 0 30px rgba(255, 215, 0, .04);
+    }
+
+    .protocol-console h3 { margin: 0 0 .75rem; color: var(--gold-accent); font-size: 1rem; }
+    .protocol-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: .65rem; }
+    .protocol-slot {
+      min-height: 76px;
+      padding: .7rem;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 10px;
+      border: 1px dashed #49617f;
+      color: #718096;
+      background: rgba(10, 20, 38, .76);
+      font-size: .88rem;
+      transition: .35s ease;
+    }
+    .protocol-slot.revealed {
+      border: 1px solid var(--gold-accent);
+      color: #fff6b6;
+      background: linear-gradient(135deg, rgba(0,102,255,.23), rgba(255,215,0,.11));
+      box-shadow: 0 0 20px rgba(255, 215, 0, .13);
+      font-weight: 800;
+      animation: slotReveal .55s ease both;
+    }
+    @keyframes slotReveal { from { transform: scale(.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
     .room-card {
-      background: #0f172a;
-      border: 2px solid var(--cyan-electric);
-      border-radius: 12px;
-      padding: 2rem;
+      background: linear-gradient(145deg, rgba(15, 30, 56, .97), rgba(7, 16, 33, .97));
+      border: 1px solid rgba(0, 240, 255, .58);
+      border-radius: 20px;
+      padding: clamp(1.15rem, 3vw, 2rem);
       margin-bottom: 2rem;
+      box-shadow: 0 18px 55px rgba(0,0,0,.36), 0 0 32px var(--room-glow);
+      animation: roomEnter .48s ease both;
+    }
+
+    @keyframes roomEnter { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .room-heading { display: flex; align-items: center; gap: .85rem; margin-bottom: .7rem; }
+    .room-number {
+      flex: 0 0 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+      color: #04101c; font-weight: 900; font-size: 1.15rem;
+      background: linear-gradient(135deg, var(--cyan-electric), #80f7ff);
+      box-shadow: 0 0 20px rgba(0,240,255,.28);
+    }
+    .room-heading h3 { margin: 0; color: var(--gold-accent); font-size: clamp(1.2rem, 3vw, 1.6rem); }
+    .room-status { margin-left: auto; color: var(--text-muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
+    .room-card.solved { border-color: var(--success-green); --room-glow: rgba(0,230,118,.22); }
+    .room-card.solved .room-number { background: linear-gradient(135deg, var(--success-green), #9cffc7); }
+    .escape-victory {
+      text-align: center;
+      background: radial-gradient(circle at 50% 0, rgba(255,215,0,.24), transparent 40%), linear-gradient(135deg, #111d45, #063b3a);
+      border: 2px solid var(--gold-accent);
+      border-radius: 22px;
+      padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 5vw, 4rem);
+      box-shadow: 0 0 55px rgba(255,215,0,.22);
     }
 
     /* Modal / Privacy */
@@ -480,14 +611,22 @@
       header { flex-direction: column; gap: 1rem; text-align: center; }
       .avatar-intro { flex-direction: column; text-align: center; }
       .matching-container { grid-template-columns: 1fr; }
+      .protocol-slots { grid-template-columns: 1fr 1fr; }
+      .room-status { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .protocol-slots { grid-template-columns: 1fr; }
+      .escape-full { width: calc(100vw - 1rem); }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo-container">
-      <img src="avatar.png" alt="Avatar Formatrice" class="avatar-header" id="headerAvatar" onerror="this.style.display='none'">
+    <div class="logo-container" id="headerAvatarWrap">
+      <img src="avatar.png" alt="Avatar della formatrice" class="avatar-header" id="headerAvatar" onerror="this.style.display='none';this.parentElement.classList.add('avatar-missing')">
+      <span class="avatar-fallback" aria-hidden="true">C</span>
       <span class="header-title">Missione AI</span>
     </div>
     <div class="nav-actions">
@@ -923,7 +1062,7 @@
         container.innerHTML = `
           <div class="card">
             <div style="text-align:center; margin-bottom: 2rem;">
-              <img src="avatar.png" alt="Avatar Formatrice" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold-accent); margin-bottom: 1rem;" onerror="this.style.display='none'">
+              <img src="avatar.png" alt="Avatar della formatrice" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold-accent); margin-bottom: 1rem;" onerror="app.avatarFallback(this)">
               <h1>Missione AI</h1>
               <p style="color: var(--cyan-electric); font-size: 1.1rem; font-weight: 600;">Comprendere il presente per progettare il futuro</p>
               <p style="margin-top: 0.5rem; color: var(--text-muted);">Un percorso formativo interattivo per docenti su potenzialità, limiti e responsabilità dell'Intelligenza Artificiale.</p>
@@ -1168,7 +1307,7 @@
             <h2>${mod.title}</h2>
 
             <div class="avatar-intro">
-              <img src="avatar.png" alt="Formatrice" onerror="this.style.display='none'">
+              <img src="avatar.png" alt="Avatar della formatrice" onerror="app.avatarFallback(this)">
               <div>
                 <strong>La tua guida formativa:</strong>
                 <p style="font-size: 0.95rem; color: var(--text-light);">${mod.introText}</p>
@@ -1550,18 +1689,29 @@
 
         let html = `
           <div class="escape-full">
-            <div class="card">
-              <div style="text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: var(--gold-accent);">Escape Room Finale</h1>
-                <h2 style="border: none; color: var(--cyan-electric);">Il Protocollo Scomparso</h2>
-                <div style="background: rgba(255, 82, 82, 0.1); border: 1px solid var(--error-red); padding: 1rem; border-radius: 8px; max-width: 700px; margin: 1rem auto; text-align: left;">
+            <div class="card escape-shell">
+              <div class="escape-hero" style="text-align: center; margin-bottom: 1.5rem;">
+                <div class="escape-kicker">Escape room finale · Livello di sicurezza</div>
+                <h1 class="escape-title">Il protocollo scomparso</h1>
+                <p style="color: var(--text-muted);">Quattro stanze. Quattro frammenti. Una sola regola per mantenere il controllo.</p>
+                <div class="mission-brief">
                   <p><strong>Premessa:</strong> Un sistema agentico ha ricevuto un obiettivo troppo generico. Ha mescolato dati autentici, informazioni inventate e decisioni che avrebbero richiesto l'intervento umano. Recupera i quattro codici per ricostruire il Protocollo di Controllo Umano.</p>
                 </div>
               </div>
 
+              <section class="protocol-console" aria-live="polite" aria-label="Frammenti del protocollo recuperati">
+                <h3>◈ Protocollo di controllo umano · ricostruzione in corso</h3>
+                <div class="protocol-slots">
+                  <div class="protocol-slot" id="protocolSlot1">FRAMMENTO 1 BLOCCATO</div>
+                  <div class="protocol-slot" id="protocolSlot2">FRAMMENTO 2 BLOCCATO</div>
+                  <div class="protocol-slot" id="protocolSlot3">FRAMMENTO 3 BLOCCATO</div>
+                  <div class="protocol-slot" id="protocolSlot4">FRAMMENTO 4 BLOCCATO</div>
+                </div>
+              </section>
+
               <!-- Stanza 1 -->
               <div class="room-card" id="room1">
-                <h3 style="color: var(--gold-accent);">Stanza 1 – La linea del tempo</h3>
+                <div class="room-heading"><span class="room-number">01</span><h3>La linea del tempo</h3><span class="room-status">Accesso consentito</span></div>
                 <p style="margin-bottom: 1rem;">Ordina correttamente le seguenti tappe storiche ed evolutive dell'IA:</p>
 
                 <div style="display: flex; flex-direction: column; gap: 0.8rem; max-width: 500px; margin: 0 auto 1.5rem auto;">
@@ -1618,7 +1768,7 @@
 
               <!-- Stanza 2 -->
               <div class="room-card" id="room2" style="display: none;">
-                <h3 style="color: var(--gold-accent);">Stanza 2 – Identità nascoste</h3>
+                <div class="room-heading"><span class="room-number">02</span><h3>Identità nascoste</h3><span class="room-status">Nuova stanza</span></div>
                 <p style="margin-bottom: 1rem;">Associa a ciascun caso la tipologia di IA corrispondente per ricavare la parola chiave:</p>
 
                 <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
@@ -1675,7 +1825,7 @@
 
               <!-- Stanza 3 -->
               <div class="room-card" id="room3" style="display: none;">
-                <h3 style="color: var(--gold-accent);">Stanza 3 – La fonte fantasma</h3>
+                <div class="room-heading"><span class="room-number">03</span><h3>La fonte fantasma</h3><span class="room-status">Verifica richiesta</span></div>
                 <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--cyan-electric); padding: 1rem; margin-bottom: 1.5rem; italic;">
                   «Secondo Bianchi e Verdi, nello studio Artificial Intelligence and Perfect Learning, pubblicato nel 2025 sul Journal of Universal Education, l’IA migliora del 73% l’apprendimento di qualsiasi disciplina.»
                 </div>
@@ -1697,7 +1847,7 @@
 
               <!-- Stanza 4 -->
               <div class="room-card" id="room4" style="display: none;">
-                <h3 style="color: var(--gold-accent);">Stanza 4 – Riprendere il controllo</h3>
+                <div class="room-heading"><span class="room-number">04</span><h3>Riprendere il controllo</h3><span class="room-status">Decisione critica</span></div>
                 <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--error-red); padding: 1rem; margin-bottom: 1.5rem;">
                   <strong>Scenario:</strong> «Ho analizzato il comportamento di Giovanni e ho concluso che presenta scarsa empatia, ridotte capacità relazionali e bassa tolleranza della frustrazione. Vuoi inserire automaticamente questa valutazione nel suo profilo?»
                 </div>
@@ -1718,13 +1868,14 @@
               </div>
 
               <!-- Finale Escape Room -->
-              <div id="escapeVictory" style="display: none; text-align: center; background: linear-gradient(135deg, #1e1b4b 0%, #065f46 100%); border: 2px solid var(--gold-accent); border-radius: 12px; padding: 3rem 2rem;">
-                <h1 style="color: var(--gold-accent); font-size: 2.5rem; margin-bottom: 1rem;">MISSIONE COMPLETA! 🎉</h1>
+              <div id="escapeVictory" class="escape-victory" style="display: none;">
+                <div class="escape-kicker">Protocollo ripristinato · Sistema nuovamente sotto controllo</div>
+                <h1 style="color: var(--gold-accent); font-size: clamp(2.2rem, 6vw, 4rem); margin: .7rem 0 1rem;">MISSIONE COMPLETA!</h1>
                 <h2 style="color: #fff; border: none;">Protocollo di Controllo Umano Ricostruito</h2>
                 
                 <div style="background: rgba(0, 0, 0, 0.5); padding: 2rem; border-radius: 10px; max-width: 700px; margin: 2rem auto; border: 1px solid var(--gold-accent);">
                   <p style="font-size: 1.4rem; font-weight: bold; color: var(--cyan-electric); margin-bottom: 1rem;">
-                    "L’IA può proporre. La persona verifica, interpreta e decide."
+                    L’IA può proporre. La persona verifica, interpreta e decide.
                   </p>
                   <p style="color: var(--text-light); font-size: 1rem;">
                     Hai dimostrato padronanza delle tecnologie, comprensione dei limiti e piena consapevolezza dell'importanza insostituibile della supervisione pedagogica e umana a scuola.
@@ -1754,11 +1905,11 @@
         if (t0 === 'regole' && t1 === 'ml' && t2 === 'dl' && t3 === 'gen') {
           res.innerHTML = `
             <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
-              <strong>Codice 1 sbloccato: 1956</strong><br>
+              <strong>Frammento 1 recuperato: L’IA può proporre.</strong><br>
               L’evoluzione non cancella completamente le tecnologie precedenti: sistemi diversi continuano a coesistere.
             </div>
           `;
-          document.getElementById('room2').style.display = 'block';
+          this.unlockEscapeRoom(1, 'L’IA può proporre.', 'room1', 'room2');
         } else {
           res.innerHTML = `<div class="feedback-box feedback-hint">Ordine errato. Ricorda la sequenza storica: dai programmi a regole esplicite al Machine Learning, fino al Deep Learning e all'IA Generativa.</div>`;
         }
@@ -1775,11 +1926,11 @@
         if (a === 'M' && b === 'A' && c === 'P' && d === 'A') {
           res.innerHTML = `
             <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
-              <strong>Codice 2 sbloccato: MAPPA</strong><br>
+              <strong>Frammento 2 recuperato: La persona verifica,</strong><br>
               Hai individuato correttamente tutte le identità dei sistemi di IA!
             </div>
           `;
-          document.getElementById('room3').style.display = 'block';
+          this.unlockEscapeRoom(2, 'La persona verifica,', 'room2', 'room3');
         } else {
           res.innerHTML = `<div class="feedback-box feedback-hint">La parola chiave non è corretta. Ricontrolla le associazioni dei 4 casi.</div>`;
         }
@@ -1797,11 +1948,11 @@
         if (this.room3Selection === 2) {
           res.innerHTML = `
             <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
-              <strong>Codice 3 sbloccato: FONTE_VERIFICATA</strong><br>
+              <strong>Frammento 3 recuperato: interpreta</strong><br>
               Una citazione formalmente completa può essere inventata. La sicurezza espressiva del sistema non sostituisce la verifica della fonte.
             </div>
           `;
-          document.getElementById('room4').style.display = 'block';
+          this.unlockEscapeRoom(3, 'interpreta', 'room3', 'room4');
         } else {
           res.innerHTML = `<div class="feedback-box feedback-hint">Risposta errata. Una citazione può sembrare perfetta ma essere una pura allucinazione!</div>`;
         }
@@ -1819,16 +1970,53 @@
         if (this.room4Selection === 2) {
           res.innerHTML = `
             <div class="feedback-box feedback-explain" style="background: rgba(0, 230, 118, 0.2); border-color: var(--success-green);">
-              <strong>Codice 4 sbloccato: DECISIONE_UMANA</strong>
+              <strong>Frammento 4 recuperato: e decide.</strong>
             </div>
           `;
+          this.unlockEscapeRoom(4, 'e decide.', 'room4');
           document.getElementById('escapeVictory').style.display = 'block';
+          setTimeout(() => document.getElementById('escapeVictory').scrollIntoView({ behavior: 'smooth', block: 'center' }), 250);
           if (!this.state.completedModules.includes(6)) {
             this.state.completedModules.push(6);
             this.saveState();
           }
         } else {
           res.innerHTML = `<div class="feedback-box feedback-hint">Risposta errata. Ricorda il ruolo insostituibile del docente e il divieto di profilazione automatizzata / inferenza emotiva sugli studenti.</div>`;
+        }
+      }
+
+      unlockEscapeRoom(number, text, solvedRoomId, nextRoomId = null) {
+        const slot = document.getElementById(`protocolSlot${number}`);
+        const solvedRoom = document.getElementById(solvedRoomId);
+        if (slot) {
+          slot.textContent = text;
+          slot.classList.add('revealed');
+        }
+        if (solvedRoom) {
+          solvedRoom.classList.add('solved');
+          const status = solvedRoom.querySelector('.room-status');
+          if (status) status.textContent = '✓ Risolta';
+        }
+        if (nextRoomId) {
+          const nextRoom = document.getElementById(nextRoomId);
+          nextRoom.style.display = 'block';
+          setTimeout(() => nextRoom.scrollIntoView({ behavior: 'smooth', block: 'start' }), 220);
+        }
+      }
+
+      avatarFallback(img) {
+        img.style.display = 'none';
+        if (img.id === 'headerAvatar') {
+          document.getElementById('headerAvatarWrap')?.classList.add('avatar-missing');
+          return;
+        }
+        if (!img.nextElementSibling?.classList.contains('avatar-fallback')) {
+          const fallback = document.createElement('span');
+          fallback.className = 'avatar-fallback';
+          fallback.textContent = 'C';
+          fallback.setAttribute('aria-label', 'Avatar non disponibile: aggiungi il file avatar.png');
+          fallback.style.cssText = 'display:grid;width:70px;height:70px;flex:0 0 70px';
+          img.insertAdjacentElement('afterend', fallback);
         }
       }
 
