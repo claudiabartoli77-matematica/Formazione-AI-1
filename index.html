@@ -1011,10 +1011,12 @@
           finalAnswers: {},
           unlockedModule: 1, // 1, 2, 3, 4, 5 (5 = Final Test), 6 (Escape Room)
           completedModules: [],
-          videoConsents: {}, // moduleId -> boolean
         };
 
         this.loadState();
+        // Il consenso a YouTube vale solo per la pagina corrente:
+        // non viene salvato nel localStorage e viene richiesto per ogni video.
+        this.videoConsents = {};
         this.init();
       }
 
@@ -1043,7 +1045,6 @@
             finalAnswers: {},
             unlockedModule: 1,
             completedModules: [],
-            videoConsents: {},
           };
           this.renderMap();
         }
@@ -1257,7 +1258,7 @@
         const container = document.getElementById('appContainer');
 
         let videoHtml = "";
-        const isConsented = this.state.videoConsents[modId];
+        const isConsented = this.videoConsents[modId];
 
         if (!mod.videoId || mod.videoId.trim() === "") {
           videoHtml = `
@@ -1364,8 +1365,8 @@
       }
 
       grantVideoConsent(modId) {
-        this.state.videoConsents[modId] = true;
-        this.saveState();
+        // Consenso separato per ciascun video e limitato alla sessione corrente.
+        this.videoConsents[modId] = true;
         this.renderModule(modId);
       }
 
