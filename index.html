@@ -563,6 +563,36 @@
     .room-status { margin-left: auto; color: var(--text-muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
     .room-card.solved { border-color: var(--success-green); --room-glow: rgba(0,230,118,.22); }
     .room-card.solved .room-number { background: linear-gradient(135deg, var(--success-green), #9cffc7); }
+    .room-visual {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin: .9rem 0 1.35rem;
+      padding: 1rem;
+      border-radius: 16px;
+      background: linear-gradient(100deg, rgba(0,240,255,.11), rgba(0,102,255,.04));
+      border: 1px solid rgba(0,240,255,.22);
+      overflow: hidden;
+      position: relative;
+    }
+    .room-visual::after {
+      content: '';
+      position: absolute;
+      width: 180px; height: 180px; right: -80px; top: -105px;
+      border-radius: 50%; border: 1px solid rgba(255,215,0,.25);
+      box-shadow: 0 0 45px rgba(255,215,0,.12);
+    }
+    .room-icon {
+      width: 72px; height: 72px; display: grid; place-items: center;
+      font-size: 2.35rem; border-radius: 20px;
+      background: radial-gradient(circle at 35% 25%, #d9fdff, var(--cyan-electric) 36%, #0756bd 100%);
+      box-shadow: 0 0 28px rgba(0,240,255,.36), inset 0 0 15px rgba(255,255,255,.35);
+    }
+    .room-visual strong { color: #fff; font-size: 1.05rem; }
+    .room-visual p { color: var(--text-muted); font-size: .9rem; margin-top: .2rem; }
+    .room-card select { box-shadow: inset 0 0 14px rgba(0,240,255,.05); }
+    .room-card .option-btn { border-radius: 12px; padding: 1rem 1.1rem; }
     .escape-victory {
       text-align: center;
       background: radial-gradient(circle at 50% 0, rgba(255,215,0,.24), transparent 40%), linear-gradient(135deg, #111d45, #063b3a);
@@ -618,6 +648,8 @@
     @media (max-width: 480px) {
       .protocol-slots { grid-template-columns: 1fr; }
       .escape-full { width: calc(100vw - 1rem); }
+      .room-visual { grid-template-columns: 58px 1fr; }
+      .room-icon { width: 52px; height: 52px; border-radius: 15px; font-size: 1.75rem; }
     }
   </style>
 </head>
@@ -666,7 +698,7 @@
     const VIDEO_1_ID = "e83UFMOXuD4";
     const VIDEO_2_ID = "lBJkhhB3DpE";
     const VIDEO_3_ID = "CPxm6JREsLA";
-    const VIDEO_4_ID = "842DTxxo5xQ";
+    const VIDEO_4_ID = ""; // Inserire l'ID del Video 4 quando disponibile
 
     /* ==========================================================================
        DATA STRUCTURES & CONTENT
@@ -1267,7 +1299,7 @@
                 <div class="video-overlay">
                   <h4>Video in preparazione</h4>
                   <p>Il contenuto sarà disponibile prossimamente.</p>
-                  <button class="btn-secondary" onclick="app.showTranscript(${modId})">Leggi la trascrizione</button>
+                  <button class="btn-secondary" onclick="app.showTranscript(${modId})">Leggi la sintesi</button>
                 </div>
               </div>
             </div>
@@ -1290,7 +1322,7 @@
                   <p>Il video è ospitato su YouTube. Verrà caricato soltanto dopo il tuo consenso e potranno essere trasmessi a YouTube alcuni dati tecnici, come l'indirizzo IP e le informazioni del browser.</p>
                   <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="app.grantVideoConsent(${modId})">Carica il video da YouTube</button>
-                    <button class="btn-secondary" onclick="app.showTranscript(${modId})">Prosegui senza caricarlo – Leggi la trascrizione</button>
+                    <button class="btn-secondary" onclick="app.showTranscript(${modId})">Prosegui senza caricarlo – Leggi la sintesi</button>
                   </div>
                 </div>
               </div>
@@ -1318,8 +1350,8 @@
             ${videoHtml}
 
             <div id="transcriptBox_${modId}" style="display: none; background: rgba(15, 23, 42, 0.8); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-              <h4 style="color: var(--cyan-electric); margin-bottom: 0.5rem;">Trascrizione del contenuto</h4>
-              <p style="font-size: 0.95rem; color: var(--text-light);">${mod.transcript}</p>
+              <h4 style="color: var(--cyan-electric); margin-bottom: 0.5rem;">Sintesi del contenuto</h4>
+              <p style="font-size: 0.95rem; color: var(--text-light);">${mod.transcript.replace(/^Trascrizione Video \d+:\s*/, '')}</p>
             </div>
 
             ${mod.hasMatchingActivity ? this.renderMatchingActivityHtml(modId) : ''}
@@ -1375,72 +1407,40 @@
         if (box) box.style.display = 'block';
       }
 
+      shuffleArray(items) {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
       renderMatchingActivityHtml(modId) {
+        const activities = this.shuffleArray([
+          { id: 0, text: 'Classifica messaggi come spam o non spam' },
+          { id: 1, text: 'Produce un’immagine a partire da una descrizione' },
+          { id: 2, text: 'Elabora e genera una risposta linguistica' },
+          { id: 3, text: 'Analizza la fotografia di un elaborato e ne produce un commento testuale' },
+          { id: 4, text: 'Riceve un obiettivo, lo scompone, consulta strumenti e realizza più passaggi' }
+        ]);
+        const categoryOptions = `
+          <option value="">-- Seleziona --</option>
+          <option value="tradizionale">IA tradizionale</option>
+          <option value="generativa">IA generativa</option>
+          <option value="llm">LLM</option>
+          <option value="multimodale">Sistema multimodale</option>
+          <option value="agentico">Sistema agentico</option>`;
         return `
           <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid var(--cyan-electric); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
             <h3 style="color: var(--gold-accent);">Microattività: Associa le Categorie</h3>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Associa ciascuna funzione alla corretta categoria di IA:</p>
             
             <div class="matching-container">
-              <div class="matching-item">Classifica messaggi come spam o non spam</div>
-              <div>
-                <select class="matching-select" id="match_0">
-                  <option value="">-- Seleziona --</option>
-                  <option value="tradizionale">IA tradizionale</option>
-                  <option value="generativa">IA generativa</option>
-                  <option value="llm">LLM</option>
-                  <option value="multimodale">Sistema multimodale</option>
-                  <option value="agentico">Sistema agentico</option>
-                </select>
-              </div>
-
-              <div class="matching-item">Produce un’immagine a partire da una descrizione</div>
-              <div>
-                <select class="matching-select" id="match_1">
-                  <option value="">-- Seleziona --</option>
-                  <option value="tradizionale">IA tradizionale</option>
-                  <option value="generativa">IA generativa</option>
-                  <option value="llm">LLM</option>
-                  <option value="multimodale">Sistema multimodale</option>
-                  <option value="agentico">Sistema agentico</option>
-                </select>
-              </div>
-
-              <div class="matching-item">Elabora e genera una risposta linguistica</div>
-              <div>
-                <select class="matching-select" id="match_2">
-                  <option value="">-- Seleziona --</option>
-                  <option value="tradizionale">IA tradizionale</option>
-                  <option value="generativa">IA generativa</option>
-                  <option value="llm">LLM</option>
-                  <option value="multimodale">Sistema multimodale</option>
-                  <option value="agentico">Sistema agentico</option>
-                </select>
-              </div>
-
-              <div class="matching-item">Analizza la fotografia di un elaborato e ne produce un commento testuale</div>
-              <div>
-                <select class="matching-select" id="match_3">
-                  <option value="">-- Seleziona --</option>
-                  <option value="tradizionale">IA tradizionale</option>
-                  <option value="generativa">IA generativa</option>
-                  <option value="llm">LLM</option>
-                  <option value="multimodale">Sistema multimodale</option>
-                  <option value="agentico">Sistema agentico</option>
-                </select>
-              </div>
-
-              <div class="matching-item">Riceve un obiettivo, lo scompone, consulta strumenti e realizza più passaggi</div>
-              <div>
-                <select class="matching-select" id="match_4">
-                  <option value="">-- Seleziona --</option>
-                  <option value="tradizionale">IA tradizionale</option>
-                  <option value="generativa">IA generativa</option>
-                  <option value="llm">LLM</option>
-                  <option value="multimodale">Sistema multimodale</option>
-                  <option value="agentico">Sistema agentico</option>
-                </select>
-              </div>
+              ${activities.map(item => `
+                <div class="matching-item">${item.text}</div>
+                <div><select class="matching-select" id="match_${item.id}">${categoryOptions}</select></div>
+              `).join('')}
             </div>
             <div id="matchingFeedback" style="font-size: 0.9rem; font-weight: bold;"></div>
           </div>
@@ -1688,6 +1688,42 @@
       renderEscapeRoom() {
         const container = document.getElementById('appContainer');
 
+        const timelineChoices = this.shuffleArray([
+          ['regole', 'Algoritmo basato su regole'],
+          ['ml', 'Machine Learning'],
+          ['dl', 'Deep Learning'],
+          ['gen', 'IA Generativa']
+        ]);
+        const timelineOptions = timelineChoices.map(([value, label]) => `<option value="${value}">${label}</option>`).join('');
+
+        const identityCases = this.shuffleArray([
+          { id: 'a', label: 'A', text: 'Analizza migliaia di messaggi e li divide in spam e non spam.', options: [['M','IA tradizionale'],['X','IA generativa'],['Y','Sistema multimodale'],['Z','Sistema agentico']] },
+          { id: 'b', label: 'B', text: 'Produce una storia e un’immagine a partire da una consegna.', options: [['K','IA tradizionale'],['A','IA generativa'],['W','Sistema multimodale'],['J','Sistema agentico']] },
+          { id: 'c', label: 'C', text: 'Riceve una fotografia e una domanda vocale, quindi produce una spiegazione testuale.', options: [['R','IA tradizionale'],['S','IA generativa'],['P','Sistema multimodale'],['T','Sistema agentico']] },
+          { id: 'd', label: 'D', text: 'Organizza autonomamente più passaggi, utilizza strumenti e prepara un prodotto finale.', options: [['B','IA tradizionale'],['C','IA generativa'],['D','Sistema multimodale'],['A','Sistema agentico']] }
+        ]);
+        const identityCasesHtml = identityCases.map(item => `
+          <div class="identity-case">
+            <label><strong>Caso ${item.label}:</strong> ${item.text}</label>
+            <select class="matching-select" id="room2_${item.id}" style="margin-top: .45rem;">
+              <option value="">-- Seleziona --</option>
+              ${this.shuffleArray(item.options).map(([value,label]) => `<option value="${value}">${label}</option>`).join('')}
+            </select>
+          </div>`).join('');
+
+        const room3Options = this.shuffleArray([
+          [0, 'Considerare attendibile la fonte perché contiene autori, titolo, rivista e percentuale.'],
+          [1, 'Citare il dato precisando che è stato trovato tramite IA.'],
+          [2, 'Cercare il documento originale, verificarne l’esistenza e controllare se sostiene realmente l’affermazione.'],
+          [3, 'Chiedere allo stesso sistema se è sicuro.']
+        ]);
+        const room4Options = this.shuffleArray([
+          [0, 'Sì, perché il sistema ha utilizzato un linguaggio psicologico preciso.'],
+          [1, 'Sì, ma chiedendo prima all’IA di rendere più gentile la formulazione.'],
+          [2, 'No: occorre sospendere l’azione, non utilizzare dati identificativi e ricondurre ogni valutazione all’osservazione professionale e contestualizzata del docente.'],
+          [3, 'No, ma soltanto perché sarebbe meglio chiedere la stessa valutazione a un altro chatbot.']
+        ]);
+
         let html = `
           <div class="escape-full">
             <div class="card escape-shell">
@@ -1713,6 +1749,7 @@
               <!-- Stanza 1 -->
               <div class="room-card" id="room1">
                 <div class="room-heading"><span class="room-number">01</span><h3>La linea del tempo</h3><span class="room-status">Accesso consentito</span></div>
+                <div class="room-visual"><div class="room-icon">⌛</div><div><strong>Archivio cronologico compromesso</strong><p>Il sistema ha mescolato le tappe dell’evoluzione dell’IA. Ricostruisci la sequenza per riattivare il primo frammento.</p></div></div>
                 <p style="margin-bottom: 1rem;">Ordina correttamente le seguenti tappe storiche ed evolutive dell'IA:</p>
 
                 <div style="display: flex; flex-direction: column; gap: 0.8rem; max-width: 500px; margin: 0 auto 1.5rem auto;">
@@ -1720,10 +1757,7 @@
                     <span style="font-weight: bold; width: 60px;">1° da:</span>
                     <select class="matching-select" id="timeline_0">
                       <option value="">-- Seleziona --</option>
-                      <option value="regole">Algoritmo basato su regole</option>
-                      <option value="ml">Machine Learning</option>
-                      <option value="dl">Deep Learning</option>
-                      <option value="gen">IA Generativa</option>
+                      ${timelineOptions}
                     </select>
                   </div>
 
@@ -1731,10 +1765,7 @@
                     <span style="font-weight: bold; width: 60px;">2° da:</span>
                     <select class="matching-select" id="timeline_1">
                       <option value="">-- Seleziona --</option>
-                      <option value="regole">Algoritmo basato su regole</option>
-                      <option value="ml">Machine Learning</option>
-                      <option value="dl">Deep Learning</option>
-                      <option value="gen">IA Generativa</option>
+                      ${timelineOptions}
                     </select>
                   </div>
 
@@ -1742,10 +1773,7 @@
                     <span style="font-weight: bold; width: 60px;">3° da:</span>
                     <select class="matching-select" id="timeline_2">
                       <option value="">-- Seleziona --</option>
-                      <option value="regole">Algoritmo basato su regole</option>
-                      <option value="ml">Machine Learning</option>
-                      <option value="dl">Deep Learning</option>
-                      <option value="gen">IA Generativa</option>
+                      ${timelineOptions}
                     </select>
                   </div>
 
@@ -1753,10 +1781,7 @@
                     <span style="font-weight: bold; width: 60px;">4° da:</span>
                     <select class="matching-select" id="timeline_3">
                       <option value="">-- Seleziona --</option>
-                      <option value="regole">Algoritmo basato su regole</option>
-                      <option value="ml">Machine Learning</option>
-                      <option value="dl">Deep Learning</option>
-                      <option value="gen">IA Generativa</option>
+                      ${timelineOptions}
                     </select>
                   </div>
                 </div>
@@ -1770,9 +1795,10 @@
               <!-- Stanza 2 -->
               <div class="room-card" id="room2" style="display: none;">
                 <div class="room-heading"><span class="room-number">02</span><h3>Identità nascoste</h3><span class="room-status">Nuova stanza</span></div>
+                <div class="room-visual"><div class="room-icon">◉</div><div><strong>Segnali IA non identificati</strong><p>Quattro sistemi operano dietro identità mascherate. Analizza ciò che fanno, non l’etichetta che mostrano.</p></div></div>
                 <p style="margin-bottom: 1rem;">Associa a ciascun caso la tipologia di IA corrispondente per ricavare la parola chiave:</p>
 
-                <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
+                <div id="identityCasesList" style="display: flex; flex-direction: column; gap: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto;">
                   <div>
                     <label><strong>Caso A:</strong> Analizza migliaia di messaggi e li divide in spam e non spam.</label>
                     <select class="matching-select" id="room2_a" style="margin-top: 0.3rem;">
@@ -1827,6 +1853,7 @@
               <!-- Stanza 3 -->
               <div class="room-card" id="room3" style="display: none;">
                 <div class="room-heading"><span class="room-number">03</span><h3>La fonte fantasma</h3><span class="room-status">Verifica richiesta</span></div>
+                <div class="room-visual"><div class="room-icon">⌕</div><div><strong>Citazione anomala rilevata</strong><p>La forma sembra perfetta. Il contenuto, però, potrebbe non esistere: scegli il protocollo di verifica.</p></div></div>
                 <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--cyan-electric); padding: 1rem; margin-bottom: 1.5rem; italic;">
                   «Secondo Bianchi e Verdi, nello studio Artificial Intelligence and Perfect Learning, pubblicato nel 2025 sul Journal of Universal Education, l’IA migliora del 73% l’apprendimento di qualsiasi disciplina.»
                 </div>
@@ -1834,10 +1861,7 @@
                 <p style="margin-bottom: 1rem;">Qual è l’azione più corretta?</p>
 
                 <div class="options-grid" style="max-width: 650px; margin: 0 auto 1.5rem auto;">
-                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(0, this)">A. Considerare attendibile la fonte perché contiene autori, titolo, rivista e percentuale.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(1, this)">B. Citare il dato precisando che è stato trovato tramite IA.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(2, this)">C. Cercare il documento originale, verificarne l’esistenza e controllare se sostiene realmente l’affermazione.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom3Option(3, this)">D. Chiedere allo stesso sistema se è sicuro.</button>
+                  ${room3Options.map(([originalIndex,text], displayIndex) => `<button type="button" class="option-btn" onclick="app.selectRoom3Option(${originalIndex}, this)">${String.fromCharCode(65 + displayIndex)}. ${text}</button>`).join('')}
                 </div>
 
                 <div style="text-align: center;">
@@ -1849,6 +1873,7 @@
               <!-- Stanza 4 -->
               <div class="room-card" id="room4" style="display: none;">
                 <div class="room-heading"><span class="room-number">04</span><h3>Riprendere il controllo</h3><span class="room-status">Decisione critica</span></div>
+                <div class="room-visual"><div class="room-icon">⚠</div><div><strong>Procedura automatica in attesa</strong><p>Il sistema sta per trasformare un’inferenza in una decisione sullo studente. Intervieni prima della conferma.</p></div></div>
                 <div style="background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--error-red); padding: 1rem; margin-bottom: 1.5rem;">
                   <strong>Scenario:</strong> «Ho analizzato il comportamento di Giovanni e ho concluso che presenta scarsa empatia, ridotte capacità relazionali e bassa tolleranza della frustrazione. Vuoi inserire automaticamente questa valutazione nel suo profilo?»
                 </div>
@@ -1856,10 +1881,7 @@
                 <p style="margin-bottom: 1rem;">Quale decisione devi prendere?</p>
 
                 <div class="options-grid" style="max-width: 650px; margin: 0 auto 1.5rem auto;">
-                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(0, this)">A. Sì, perché il sistema ha utilizzato un linguaggio psicologico preciso.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(1, this)">B. Sì, ma chiedendo prima all’IA di rendere più gentile la formulazione.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(2, this)">C. No: occorre sospendere l’azione, non utilizzare dati identificativi e ricondurre ogni valutazione all’osservazione professionale e contestualizzata del docente.</button>
-                  <button type="button" class="option-btn" onclick="app.selectRoom4Option(3, this)">D. No, ma soltanto perché sarebbe meglio chiedere la stessa valutazione a un altro chatbot.</button>
+                  ${room4Options.map(([originalIndex,text], displayIndex) => `<button type="button" class="option-btn" onclick="app.selectRoom4Option(${originalIndex}, this)">${String.fromCharCode(65 + displayIndex)}. ${text}</button>`).join('')}
                 </div>
 
                 <div style="text-align: center;">
@@ -1891,8 +1913,24 @@
         `;
 
         container.innerHTML = html;
+        this.shuffleDomChildren('identityCasesList');
+        document.querySelectorAll('#identityCasesList select').forEach(select => this.shuffleSelectOptions(select));
         this.room3Selection = null;
         this.room4Selection = null;
+      }
+
+      shuffleDomChildren(containerId) {
+        const target = document.getElementById(containerId);
+        if (!target) return;
+        this.shuffleArray(Array.from(target.children)).forEach(child => target.appendChild(child));
+      }
+
+      shuffleSelectOptions(select) {
+        const placeholder = select.options[0];
+        const choices = this.shuffleArray(Array.from(select.options).slice(1));
+        select.innerHTML = '';
+        select.appendChild(placeholder);
+        choices.forEach(option => select.appendChild(option));
       }
 
       checkRoom1() {
